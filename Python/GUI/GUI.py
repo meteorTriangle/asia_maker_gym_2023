@@ -13,7 +13,13 @@ def queue_set(q_):
     q = q_
 
 def GUI():
+    global q
     root = windows()
+    PF.port_frame(root, q)
+    root.mainloop()
+    for i in range(10):
+        q['STOP'].put("stop")
+
 
 
 
@@ -22,4 +28,4 @@ def windows():
     root.title('servo adjust')
     root.resizable(False, False)
     root.geometry('1280x720')
-    return root
+    return root  
