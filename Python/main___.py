@@ -145,7 +145,7 @@ for i in range(3):
 
 
 #### tracks
-track = tk.Frame(root)
+track = tk.Frame(root) 
 track.pack()
 
 
