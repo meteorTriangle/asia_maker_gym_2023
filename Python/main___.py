@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter.constants import *
 from tkinter import messagebox
 from tkinter import font as tkf
+from PIL import Image, ImageTk
 import time
 #### sub
 
@@ -35,6 +36,7 @@ root = tk.Tk()
 root.title('servo adjust')
 root.resizable(False, False)
 root.geometry('1280x720')
+root.iconbitmap("Python\logo.ico")
 
 def port_refresh():
     ### com port read
@@ -125,11 +127,17 @@ com_refresh.pack(side="left")
 #### port connect
 com_connect = ttk.Button(Top_frame, text="連線", command=connect)        
 com_connect.pack(side="left")
+### logo
+img = Image.open("Python\LOGO.png")
+img = img.resize((96, 38))
+tk_img = ImageTk.PhotoImage(img)
+Logo = tk.Label(Top_frame, image=tk_img, height=38, width=96)
+Logo.pack(side="left")
 
 Lfont = tkf.Font(size=30)
 
 #### scale block
-servo_frame = ttk.Frame(root)                  ### servo frame
+servo_frame = tk.Frame(root, width=1280, height=200)                  ### servo frame
 servo_frame.pack(side="top")
 for i in range(3):
     single_servo_frame[i] = tk.Frame(servo_frame, bd=5, relief='groove')
@@ -145,9 +153,14 @@ for i in range(3):
 
 
 #### tracks
-track = tk.Frame(root) 
+track_f = tk.Frame(root, bd=5, relief='groove') 
+track_f.pack()
+track = tk.Canvas(track_f, width=5000, height=500)
+xsb = tk.Scrollbar(track_f, orient="horizontal", command=track.xview)
+ysb = tk.Scrollbar(track_f, orient="vertical", command=track.yview)
+xsb.pack(side="bottom", fill="x")
+ysb.pack(side="right", fill="y")
 track.pack()
-
 
 
 port_refresh()
