@@ -137,10 +137,12 @@ Logo.pack(side="left")
 Lfont = tkf.Font(size=30)
 
 #### scale block
-servo_frame = tk.Frame(root, width=1280, height=200)                  ### servo frame
-servo_frame.pack(side="top")
+setting_frame = tk.Frame(root, width=1280, height=320)                  ### servo frame
+setting_frame.pack(side="top")
+
+
 for i in range(3):
-    single_servo_frame[i] = tk.Frame(servo_frame, bd=5, relief='groove')
+    single_servo_frame[i] = tk.Frame(setting_frame, bd=5, relief='groove')
     single_servo_frame[i].grid(column=i, row=0)
     tittle = tk.Label(single_servo_frame[i], text='Light'+str(i), font=Lfont)
     tittle.pack()
@@ -153,13 +155,18 @@ for i in range(3):
 
 
 #### tracks
+track_lengh = 5000
 track_f = tk.Frame(root, bd=5, relief='groove') 
 track_f.pack()
-track = tk.Canvas(track_f, width=5000, height=500)
+tool_frame = tk.Frame(track_f, bd=1, relief="groove", width=25)
+tool_frame.pack(side="left", fill="y")
+scale = tk.Canvas(track_f, width=track_lengh, height=20, relief='groove', bd=2)
+track = tk.Canvas(track_f, width=track_lengh, height=500, relief='groove', bd=2)
 xsb = tk.Scrollbar(track_f, orient="horizontal", command=track.xview)
 ysb = tk.Scrollbar(track_f, orient="vertical", command=track.yview)
 xsb.pack(side="bottom", fill="x")
 ysb.pack(side="right", fill="y")
+scale.pack()
 track.pack()
 
 
