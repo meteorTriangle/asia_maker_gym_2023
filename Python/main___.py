@@ -35,7 +35,7 @@ com_list_name = []
 root = tk.Tk()
 root.title('servo adjust')
 root.resizable(False, False)
-root.geometry('1280x720')
+root.geometry('1280x950')
 root.iconbitmap("Python\logo.ico")
 
 def port_refresh():
@@ -108,7 +108,22 @@ def transport(nummm):
             ser.flushInput()
     
         
-        
+
+img = Image.open("Python\LOGO.png")
+img = img.resize((96, 38))
+tk_img = ImageTk.PhotoImage(img)
+
+
+## function selection block
+top_function_frame = tk.Frame(root, height=38)  ###, bd=2, relief="raised"
+top_function_frame.pack(fill="x")
+function_port = tk.Button(top_function_frame, text="PORT", width=7)
+function_port.pack(side="left")
+function_scale = tk.Button(top_function_frame, text="Scale", width=7)
+function_scale.pack(side="left")
+function_ig = tk.Button(top_function_frame, image=tk_img)
+function_ig.pack(side="left")
+
 
 
 ## Top frame(port setting)
@@ -128,16 +143,13 @@ com_refresh.pack(side="left")
 com_connect = ttk.Button(Top_frame, text="連線", command=connect)        
 com_connect.pack(side="left")
 ### logo
-img = Image.open("Python\LOGO.png")
-img = img.resize((96, 38))
-tk_img = ImageTk.PhotoImage(img)
 Logo = tk.Label(Top_frame, image=tk_img, height=38, width=96)
 Logo.pack(side="left")
 
 Lfont = tkf.Font(size=30)
 
 #### scale block
-setting_frame = tk.Frame(root, width=1280, height=320)                  ### servo frame
+setting_frame = tk.Frame(root, width=1280, height=400)                  ### servo frame
 setting_frame.pack(side="top")
 
 
@@ -148,10 +160,10 @@ for i in range(3):
     tittle.pack()
     vertical_servo[i] = tk.IntVar()
     horizon_servo[i] = tk.IntVar()
-    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=200, variable=vertical_servo[i], orient='vertical', from_=0, to=90, width=30, command=transport, resolution=1)
+    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=30, command=transport, resolution=1)
     vertical_servo_gui[i].pack()
-    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180,width=30, command=transport, resolution=1)
-    horizon_servo_gui[i].pack()
+    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, command=transport, resolution=1)
+    horizon_servo_gui[i].pack(side="bottom")
 
 
 #### tracks
