@@ -114,15 +114,16 @@ img = img.resize((96, 38))
 tk_img = ImageTk.PhotoImage(img)
 
 
+BBfont = tkf.Font(size=19)
 ## function selection block
-top_function_frame = tk.Frame(root, height=38)  ###, bd=2, relief="raised"
+top_function_frame = tk.Frame(root, height=38, bd=2, relief="raised")  ###, bd=2, relief="raised"
 top_function_frame.pack(fill="x")
-function_port = tk.Button(top_function_frame, text="PORT", width=7)
+function_port = tk.Button(top_function_frame, text="PORT", width=7, font=BBfont)
 function_port.pack(side="left")
-function_scale = tk.Button(top_function_frame, text="Scale", width=7)
+function_scale = tk.Button(top_function_frame, text="SCALE", width=7, font=BBfont)
 function_scale.pack(side="left")
 function_ig = tk.Button(top_function_frame, image=tk_img)
-function_ig.pack(side="left")
+function_ig.pack(side="right")
 
 
 
