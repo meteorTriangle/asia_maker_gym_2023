@@ -115,6 +115,7 @@ tk_img = ImageTk.PhotoImage(img)
 
 
 BBfont = tkf.Font(size=19)
+"""
 ## function selection block
 top_function_frame = tk.Frame(root, height=38, bd=2, relief="raised")  ###, bd=2, relief="raised"
 top_function_frame.pack(fill="x")
@@ -124,7 +125,7 @@ function_scale = tk.Button(top_function_frame, text="SCALE", width=7, font=BBfon
 function_scale.pack(side="left")
 function_ig = tk.Button(top_function_frame, image=tk_img)
 function_ig.pack(side="right")
-
+"""
 
 
 ## Top frame(port setting)
@@ -167,7 +168,8 @@ for i in range(3):
     horizon_servo_gui[i].pack(side="bottom")
 
 
-#### tracks
+#### text editor
+"""
 track_lengh = 5000
 track_f = tk.Frame(root, bd=5, relief='groove') 
 track_f.pack()
@@ -181,7 +183,7 @@ xsb.pack(side="bottom", fill="x")
 ysb.pack(side="right", fill="y")
 scale.pack()
 track.pack()
-
+"""
 
 port_refresh()
 
