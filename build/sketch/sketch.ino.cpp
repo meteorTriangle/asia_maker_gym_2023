@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#line 1 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 1 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
 #include <Servo.h>
 //const uint8_t LED_pin[3] = {9, 10, 11};
 //uint32_t color_code = 0xED0CC8;
@@ -11,11 +11,11 @@ uint8_t Servo_deg[3][2] = {{90, 90}, {90, 90}, {90, 90}};
 Servo myservo[3][2];
 
 
-#line 12 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 12 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
 void setup();
-#line 38 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 38 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
 void loop();
-#line 12 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 12 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
 void setup()
 {
     for(int i = 0; i < 3; i++){

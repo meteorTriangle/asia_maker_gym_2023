@@ -1,5 +1,5 @@
-c:\Users\robot\Desktop\asia\ maker\ gym\ 2023\build\sketch\sketch.ino.cpp.o: \
- c:\Users\robot\Desktop\asia\ maker\ gym\ 2023\build\sketch\sketch.ino.cpp \
+c:\Users\robot\Desktop\Project\asia\ maker\ gym\ 2023\build\sketch\sketch.ino.cpp.o: \
+ c:\Users\robot\Desktop\Project\asia\ maker\ gym\ 2023\build\sketch\sketch.ino.cpp \
  C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino/Arduino.h \
  C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino/binary.h \
  C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino/WCharacter.h \

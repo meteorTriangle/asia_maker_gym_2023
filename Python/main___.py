@@ -7,9 +7,18 @@ from tkinter import ttk
 from tkinter.constants import *
 from tkinter import messagebox
 from tkinter import font as tkf
+from tkinter import scrolledtext
+from tkinter import filedialog
 from PIL import Image, ImageTk
 import time
+import ctypes
+import sys
+
+import threading as th
+import queue
+import time
 #### sub
+import serial__.ser as sser
 
 run = 1
 
@@ -31,18 +40,24 @@ horizon_servo_id = id(horizon_servo)
 com_list_description = ['']
 com_list_name = []
 
+file_path = "Untitle"
+fileTypes = [("JSON","*.json")]
+
 ## GUI run
 root = tk.Tk()
-root.title('servo adjust')
+root.title(file_path)
 root.resizable(False, False)
 root.geometry('1280x950')
 root.iconbitmap("Python\logo.ico")
+
+sj = sser.serial_json(BAUD_RATES)
+
 
 def port_refresh():
     ### com port read
     com_list_description.clear()
     com_list_name.clear()
-    ports = serial.tools.list_ports_windows.comports()
+    ports = sj.port_refresh()
     for p in ports:
         com_list_description.append(p.description)
         com_list_name.append(p.name)
@@ -66,19 +81,16 @@ def connect():
     else:
         COM_PORT_index = com_list_description.index(COM_PORT)
         print(com_list_name[COM_PORT_index])
-    try:
-        global ser
-        ser = serial.Serial(com_list_name[COM_PORT_index], BAUD_RATES)
+    err_state = sj.connect(com_list_name[COM_PORT_index])
+    if(err_state == False):
         messagebox.showinfo("連線成功", "連線成功")
         com_connect['text'] = "斷線"
         com_connect['command'] = disconnect
-        print(str(ser.isOpen()))
-    except Exception as e:
-        messagebox.showinfo("連線失敗", e)
+    else:
+        messagebox.showinfo("連線失敗", sj.error)
     
 def disconnect():
-    global ser
-    ser.close()
+    sj.disconnect()
     com_connect['text'] = "連線"
     com_connect['command'] = connect
 
@@ -87,27 +99,42 @@ def transport(nummm):
     global horizon_servo_gui
     global ms
     noError = 1
-    try:
-        ser.isOpen()
-    except:
-        messagebox.showinfo("Error", '請先連線')
-        noError = 0
 
-    if noError:
-        if int(time.time()*1000) > ms+20 :
-            trans_data = ''
-            for j in range(3):
-                print(str(horizon_servo_gui[j].get()).zfill(3))
-                print(str(vertical_servo_gui[j].get()).zfill(3))
-                trans_data = trans_data + str(horizon_servo_gui[j].get()).zfill(3) + " "
-                trans_data = trans_data + str(vertical_servo_gui[j].get()).zfill(3) + " "
-            trans_data = '121m' + trans_data[0:23]+'M'
-            ser.write(trans_data.encode('UTF-8'))
-            print(trans_data.encode('ASCII'))
-            ms = int(time.time()*1000)
-            ser.flushInput()
+    trans_data = ''
+    for j in range(3):
+        print(str(horizon_servo_gui[j].get()).zfill(3))
+        print(str(vertical_servo_gui[j].get()).zfill(3))
+        trans_data = trans_data + str(horizon_servo_gui[j].get()).zfill(3) + " "
+        trans_data = trans_data + str(vertical_servo_gui[j].get()).zfill(3) + " "
+    trans_data = '121m' + trans_data[0:23]+'M'
+    error_state = sj.transport(trans_data.encode('UTF-8'))
+    if(error_state):
+        messagebox.showinfo("連線失敗", sj.error)
     
-        
+
+def open__file():
+    global file_path
+    file_path = filedialog.askopenfilename(filetypes = fileTypes)
+    with open(file_path, 'r') as f:
+        txt.delete(1.0,END)
+        txt.insert(INSERT,f.read())
+    root.title(file_path)
+    
+def save__file(save_as):
+    global file_path
+    if(file_path == "Untitle" or save_as == True):
+        file_path = filedialog.asksaveasfilename(filetypes = fileTypes)
+        file_path = file_path + ".json"
+    with open(file_path, 'w') as f:
+        f.write(txt.get('1.0','end'))
+    root.title(file_path)
+
+def save__():
+    save__file(False)
+
+def save__as():
+    save__file(True)
+
 
 img = Image.open("Python\LOGO.png")
 img = img.resize((96, 38))
@@ -132,21 +159,30 @@ function_ig.pack(side="right")
 Top_frame = ttk.Frame(root)
 Top_frame.pack(side = "top", fill="x")
 
-## port selecter
+#### port selecter
 port_label = ttk.Label(Top_frame, text="序列埠:").pack(side='left')              
 port_GUI = tk.StringVar()
 port_GUI.set("請選擇序列埠")
 port_menu = tk.OptionMenu(Top_frame, port_GUI, *com_list_description)
 port_menu.pack(side="left")
-## refresh Button
+#### refresh Button
 com_refresh = ttk.Button(Top_frame, text="重新整理", command=port_refresh)        
 com_refresh.pack(side="left")
 #### port connect
 com_connect = ttk.Button(Top_frame, text="連線", command=connect)        
 com_connect.pack(side="left")
+#### open file
+open_file_but = ttk.Button(Top_frame, text="開啟檔案", command=open__file)
+open_file_but.pack(side="left")
+#### save file
+save_file_but = ttk.Button(Top_frame, text="儲存檔案", command=save__)
+save_file_but.pack(side="left")
+#### save as file
+save_as_file_but = ttk.Button(Top_frame, text="另存新檔", command=save__as)
+save_as_file_but.pack(side="left")
 ### logo
-Logo = tk.Label(Top_frame, image=tk_img, height=38, width=96)
-Logo.pack(side="left")
+## Logo = tk.Label(Top_frame, image=tk_img, height=38, width=96)
+## Logo.pack(side="left")
 
 Lfont = tkf.Font(size=30)
 
@@ -169,21 +205,12 @@ for i in range(3):
 
 
 #### text editor
-"""
-track_lengh = 5000
-track_f = tk.Frame(root, bd=5, relief='groove') 
-track_f.pack()
-tool_frame = tk.Frame(track_f, bd=1, relief="groove", width=25)
-tool_frame.pack(side="left", fill="y")
-scale = tk.Canvas(track_f, width=track_lengh, height=20, relief='groove', bd=2)
-track = tk.Canvas(track_f, width=track_lengh, height=500, relief='groove', bd=2)
-xsb = tk.Scrollbar(track_f, orient="horizontal", command=track.xview)
-ysb = tk.Scrollbar(track_f, orient="vertical", command=track.yview)
-xsb.pack(side="bottom", fill="x")
-ysb.pack(side="right", fill="y")
-scale.pack()
-track.pack()
-"""
+txt = scrolledtext.ScrolledText(root, height=500, width=1280)
+txt.pack()
+
+
+
+
 
 port_refresh()
 
@@ -193,7 +220,7 @@ run = 1
 root.mainloop()
 
 try:
-    ser.close()
+    sj.disconnect()
 except:
     pass
 

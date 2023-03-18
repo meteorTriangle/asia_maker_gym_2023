@@ -1,5 +1,5 @@
-# 1 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
-# 2 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino" 2
+# 1 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
+# 2 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino" 2
 //const uint8_t LED_pin[3] = {9, 10, 11};
 //uint32_t color_code = 0xED0CC8;
 
@@ -36,7 +36,7 @@ void setup()
     }
 
     */
-# 34 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
+# 34 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
 }
 
 bool flag = 0;
@@ -76,5 +76,5 @@ void loop()
     }
 
 	*/
-# 69 "c:\\Users\\robot\\Desktop\\asia maker gym 2023\\sketch\\sketch.ino"
+# 69 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
 }
