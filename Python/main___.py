@@ -16,7 +16,6 @@ import sys
 
 import threading as th
 import queue
-import time
 #### sub
 import serial__.ser as sser
 
@@ -51,7 +50,6 @@ root.geometry('1280x950')
 root.iconbitmap("Python\logo.ico")
 
 sj = sser.serial_json(BAUD_RATES)
-
 
 def port_refresh():
     ### com port read
@@ -95,21 +93,7 @@ def disconnect():
     com_connect['command'] = connect
 
 def transport(nummm):
-    global ser
-    global horizon_servo_gui
-    global ms
-    noError = 1
-
-    trans_data = ''
-    for j in range(3):
-        print(str(horizon_servo_gui[j].get()).zfill(3))
-        print(str(vertical_servo_gui[j].get()).zfill(3))
-        trans_data = trans_data + str(horizon_servo_gui[j].get()).zfill(3) + " "
-        trans_data = trans_data + str(vertical_servo_gui[j].get()).zfill(3) + " "
-    trans_data = '121m' + trans_data[0:23]+'M'
-    error_state = sj.transport(trans_data.encode('UTF-8'))
-    if(error_state):
-        messagebox.showinfo("連線失敗", sj.error)
+    pass
     
 
 def open__file():
@@ -135,6 +119,74 @@ def save__():
 def save__as():
     save__file(True)
 
+def loop_():
+    now_time = sj.get_time()
+    sec_I = (now_time % 600000) / 1000
+    min_I = now_time // (60*1000)
+    sec_I = sec_I - (min_I*60)
+    min_S = "{:0>2d}".format(int(min_I))
+    sec_S = '%05.2f' % sec_I
+    time_text=  min_S + ":" + sec_S
+    timer_label["text"]=time_text
+    if(sj.timer_state):
+        if(sj.pause_state == False):
+            servo_data = sj.run_json()
+            horizon_servo_gui[0].set(servo_data[0][0])
+            vertical_servo_gui[0].set(servo_data[0][1])
+    global ser
+    global ms
+
+    if(com_connect['text'] == "斷線"):
+        noError = 1
+        trans_data = ''
+        for j in range(3):
+            print(str(horizon_servo_gui[j].get()).zfill(3))
+            print(str(vertical_servo_gui[j].get()).zfill(3))
+            trans_data = trans_data + str(horizon_servo_gui[j].get()).zfill(3) + " "
+            trans_data = trans_data + str(vertical_servo_gui[j].get()).zfill(3) + " "
+        trans_data = '121m' + trans_data[0:23]+'M'
+        error_state = sj.transport(trans_data.encode('UTF-8'))
+        if(error_state):
+            messagebox.showinfo("連線失敗", sj.error)
+    
+    root.after(10, loop_)
+
+def play_C():
+    if(sj.timer_state):
+        pass
+    else:
+        sj.file_path = file_path
+        sj.timer_state = True
+        sj.timer_reset()
+        play_button["bg"] = "gray"
+
+def stop_C():
+    sj.timer_state = False
+    pause_button["bg"] = "white"
+    play_button["bg"] = "white"
+
+def pause_C():
+    if(sj.timer_state):
+        if(sj.pause_state):
+            sj.timer_resume()
+            pause_button["bg"] = "white"
+            play_button["bg"] = "gray"
+        else:
+            sj.timer_pause()
+            pause_button["bg"] = "gray"
+            play_button["bg"] = "white"
+
+def fastT_C():
+    if sj.timer_state :
+        sj.timerPause = sj.timerPause + 5000
+
+def backT_C():
+    if sj.timer_state :
+        if(sj.get_time() <= 5000):
+            sj.timer_reset()
+        else:
+            sj.timerPause = sj.timerPause - 5000
+            
 
 img = Image.open("Python\LOGO.png")
 img = img.resize((96, 38))
@@ -142,18 +194,6 @@ tk_img = ImageTk.PhotoImage(img)
 
 
 BBfont = tkf.Font(size=19)
-"""
-## function selection block
-top_function_frame = tk.Frame(root, height=38, bd=2, relief="raised")  ###, bd=2, relief="raised"
-top_function_frame.pack(fill="x")
-function_port = tk.Button(top_function_frame, text="PORT", width=7, font=BBfont)
-function_port.pack(side="left")
-function_scale = tk.Button(top_function_frame, text="SCALE", width=7, font=BBfont)
-function_scale.pack(side="left")
-function_ig = tk.Button(top_function_frame, image=tk_img)
-function_ig.pack(side="right")
-"""
-
 
 ## Top frame(port setting)
 Top_frame = ttk.Frame(root)
@@ -203,12 +243,52 @@ for i in range(3):
     horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, command=transport, resolution=1)
     horizon_servo_gui[i].pack(side="bottom")
 
+but_frame = tk.Frame(root)
+but_frame.pack(fill="both")
+### play option
+play_frame = tk.Frame(but_frame, bd=2, relief='groove')
+play_frame.pack(side="top", fill="x")
+### load icon
+play_img = Image.open("Python\icon\play-button-arrowhead.png")
+play_img = play_img.resize((30, 30))
+play_tk_img = ImageTk.PhotoImage(play_img)
+
+pause_img = Image.open("Python\icon\pause.png")
+pause_img = pause_img.resize((30, 30))
+pause_tk_img = ImageTk.PhotoImage(pause_img)
+
+stop_img = Image.open("Python\icon\stop-button.png")
+stop_img = stop_img.resize((30, 30))
+stop_tk_img = ImageTk.PhotoImage(stop_img)
+
+fast_img = Image.open("Python\icon\\fast-forward.png")
+fast_img = fast_img.resize((30, 30))
+fast_tk_img = ImageTk.PhotoImage(fast_img)
+
+back_img = Image.open("Python\icon\\rewind-button.png")
+back_img = back_img.resize((30, 30))
+back_tk_img = ImageTk.PhotoImage(back_img)
+
+### font
+timer_font = tkf.Font(size=24)
+
+### button
+play_button = tk.Button(play_frame, image=play_tk_img, command=play_C, bg="white")
+play_button.pack(side="left")
+pause_button = tk.Button(play_frame, image=pause_tk_img, command=pause_C, bg="white")
+pause_button.pack(side="left")
+stop_button = tk.Button(play_frame, image=stop_tk_img, command=stop_C, bg="white")
+stop_button.pack(side="left")
+back_button = tk.Button(play_frame, image=back_tk_img, bg="white", command=backT_C)
+back_button.pack(side="left")
+fast_button = tk.Button(play_frame, image=fast_tk_img, bg="white", command=fastT_C)
+fast_button.pack(side="left")
+timer_label = tk.Label(play_frame, text="00:00.00", font=timer_font, bd=1, relief='raise')
+timer_label.pack(side="left")
 
 #### text editor
-txt = scrolledtext.ScrolledText(root, height=500, width=1280)
+txt = scrolledtext.ScrolledText(but_frame, height=500, width=180)
 txt.pack()
-
-
 
 
 
@@ -216,8 +296,9 @@ port_refresh()
 
 ###window.iconbitmap('icon.ico')
 run = 1
-
+loop_()
 root.mainloop()
+sj.timer_state=False
 
 try:
     sj.disconnect()
