@@ -14,8 +14,8 @@ import time
 import ctypes
 import sys
 
-import threading as th
-import queue
+### import threading as th
+### import queue
 #### sub
 import serial__.ser as sser
 
@@ -131,8 +131,12 @@ def loop_():
     if(sj.timer_state):
         if(sj.pause_state == False):
             servo_data = sj.run_json()
-            horizon_servo_gui[0].set(servo_data[0][0])
-            vertical_servo_gui[0].set(servo_data[0][1])
+            if type(servo_data) is str:
+                messagebox.showinfo("錯誤", servo_data)
+            else:
+                for j in range(3):
+                    horizon_servo_gui[j].set(servo_data[j][0])
+                    vertical_servo_gui[j].set(servo_data[j][1])
     global ser
     global ms
 
@@ -156,6 +160,7 @@ def play_C():
         pass
     else:
         sj.file_path = file_path
+        sj.pause_state = False
         sj.timer_state = True
         sj.timer_reset()
         play_button["bg"] = "gray"

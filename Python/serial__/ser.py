@@ -45,7 +45,10 @@ class serial_json:
             return True
         
     def run_json(self):
-        servo = self.jj.run(self.get_time())
+        try:
+            servo = self.jj.run(self.get_time())
+        except Exception as error:
+            return error
         return servo
 
     def get_time(self):
