@@ -19,13 +19,12 @@ import sys
 #### sub
 import serial__.ser as sser
 
+servo_change = False
+
 run = 1
 
 ###pyserial
 BAUD_RATES = 115200
-ser = None
-
-ms = int(time.time()*1000)
 
 single_servo_frame = list(range(3))
 horizon_servo_gui = list(range(3))
@@ -92,10 +91,6 @@ def disconnect():
     com_connect['text'] = "連線"
     com_connect['command'] = connect
 
-def transport(nummm):
-    pass
-    
-
 def open__file():
     global file_path
     file_path = filedialog.askopenfilename(filetypes = fileTypes)
@@ -137,23 +132,19 @@ def loop_():
                 for j in range(3):
                     horizon_servo_gui[j].set(servo_data[j][0])
                     vertical_servo_gui[j].set(servo_data[j][1])
-    global ser
-    global ms
-
-    if(com_connect['text'] == "斷線"):
-        noError = 1
+    global servo_change
+    if(com_connect['text'] == "斷線" and servo_change):
         trans_data = ''
         for j in range(3):
-            print(str(horizon_servo_gui[j].get()).zfill(3))
-            print(str(vertical_servo_gui[j].get()).zfill(3))
-            trans_data = trans_data + str(horizon_servo_gui[j].get()).zfill(3) + " "
-            trans_data = trans_data + str(vertical_servo_gui[j].get()).zfill(3) + " "
-        trans_data = '121m' + trans_data[0:23]+'M'
+            trans_data = trans_data + "{:0>3d}".format(int(horizon_servo_gui[j].get())) + " "
+            trans_data = trans_data + "{:0>3d}".format(int(vertical_servo_gui[j].get())) + " "
+        trans_data = 'm' + trans_data[0:23]+'M'
         error_state = sj.transport(trans_data.encode('UTF-8'))
-        if(error_state):
-            messagebox.showinfo("連線失敗", sj.error)
+    ##    if error_state is True:
+    ##        messagebox.showinfo("連線失敗", sj.error)
+        servo_change = False
     
-    root.after(10, loop_)
+    root.after(70, loop_)
 
 def play_C():
     if(sj.timer_state):
@@ -192,6 +183,9 @@ def backT_C():
         else:
             sj.timerPause = sj.timerPause - 5000
             
+def chaange(num):
+    global servo_change
+    servo_change = True
 
 img = Image.open("Python\LOGO.png")
 img = img.resize((96, 38))
@@ -243,9 +237,9 @@ for i in range(3):
     tittle.pack()
     vertical_servo[i] = tk.IntVar()
     horizon_servo[i] = tk.IntVar()
-    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=30, command=transport, resolution=1)
+    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=30, resolution=1, command=chaange)
     vertical_servo_gui[i].pack()
-    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, command=transport, resolution=1)
+    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, resolution=1, command=chaange)
     horizon_servo_gui[i].pack(side="bottom")
 
 but_frame = tk.Frame(root)

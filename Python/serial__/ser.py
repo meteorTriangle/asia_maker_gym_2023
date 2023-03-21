@@ -10,7 +10,7 @@ class serial_json:
         self.com_port = None
         self.error = ""
         self.BAUD_RATE = baudrates
-        self.ser = None
+        self.ser = serial.Serial()
         self.file_path = None
         self.timer = 0
         self.refTime = time.time_ns()
@@ -26,8 +26,12 @@ class serial_json:
     
     def connect(self, com):
         self.com_port = com
+        self.ser.baudrate = self.BAUD_RATE
+        self.ser.port = self.com_port
+        self.ser.timeout = 0.01
+        self.ser.write_timeout = 0.01
         try:
-            self.ser = serial.Serial(self.com_port, self.BAUD_RATE)
+            self.ser.open()
             return False
         except Exception as error:
             self.error = error
@@ -37,6 +41,8 @@ class serial_json:
         self.ser.close()
 
     def transport(self, data):
+        print(self.ser.is_open)
+        self.ser.reset_output_buffer()
         try:
             self.ser.write(data)
             return False
