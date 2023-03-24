@@ -144,7 +144,7 @@ def loop_():
     ##        messagebox.showinfo("連線失敗", sj.error)
         servo_change = False
     
-    root.after(70, loop_)
+    root.after(30, loop_)
 
 def play_C():
     if(sj.timer_state):
