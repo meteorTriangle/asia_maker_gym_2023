@@ -136,10 +136,11 @@ def loop_():
     if(com_connect['text'] == "斷線" and servo_change):
         trans_data = ''
         for j in range(3):
-            trans_data = trans_data + "{:0>3d}".format(int(horizon_servo_gui[j].get())) + " "
-            trans_data = trans_data + "{:0>3d}".format(int(vertical_servo_gui[j].get())) + " "
-        trans_data = 'm' + trans_data[0:23]+'M'
+            trans_data = trans_data + "{:0>4d}".format(int(horizon_servo_gui[j].get()*2000/180 +500)) + " "
+            trans_data = trans_data + "{:0>4d}".format(int(vertical_servo_gui[j].get()*2000/180 +500)) + " "
+        trans_data = 'm' + trans_data[0:29]+'M'
         error_state = sj.transport(trans_data.encode('UTF-8'))
+        print(trans_data)
     ##    if error_state is True:
     ##        messagebox.showinfo("連線失敗", sj.error)
         servo_change = False
@@ -235,11 +236,11 @@ for i in range(3):
     single_servo_frame[i].grid(column=i, row=0)
     tittle = tk.Label(single_servo_frame[i], text='Light'+str(i), font=Lfont)
     tittle.pack()
-    vertical_servo[i] = tk.IntVar()
-    horizon_servo[i] = tk.IntVar()
-    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=30, resolution=1, command=chaange)
+    vertical_servo[i] = tk.DoubleVar()
+    horizon_servo[i] = tk.DoubleVar()
+    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=30, resolution=0.1, command=chaange)
     vertical_servo_gui[i].pack()
-    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, resolution=1, command=chaange)
+    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, resolution=0.1, command=chaange)
     horizon_servo_gui[i].pack(side="bottom")
 
 but_frame = tk.Frame(root)
