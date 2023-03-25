@@ -49,13 +49,13 @@ void loop()
         flag = 1;
     }
     if(flag){
-        Serial.println(data);
+        //Serial.println(data);
         bool flag = 0;
         int nn = data.indexOf('m');
         String data__ = data.substring(nn+1);
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 2; j++){
-                String degT = data__.substring(((i*2)+j)*5, (((i*2)+j)*5)+3); //(((i*2)+j)*4)+3
+                String degT = data__.substring(((i*2)+j)*5, (((i*2)+j)*5)+4); //(((i*2)+j)*4)+3
                 Servo_deg[i][j] = degT.toInt();
                 myservo[i][j].writeMicroseconds(Servo_deg[i][j]);
                 //Serial.print(String(Servo_deg[i][j]) + ' ');
