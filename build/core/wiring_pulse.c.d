@@ -1,6 +1,6 @@
-c:\Users\robot\Desktop\Project\asia\ maker\ gym\ 2023\build\core\wiring_pulse.c.o: \
- C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino\wiring_pulse.c \
- C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino\wiring_private.h \
- C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino\Arduino.h \
- C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\cores\arduino\binary.h \
- C:\Users\robot\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.5\variants\standard/pins_arduino.h
+c:\Users\bcps1\Desktop\project\asia_maker_gym_2023\build\core\wiring_pulse.c.o: \
+ C:\Users\bcps1\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino\wiring_pulse.c \
+ C:\Users\bcps1\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino\wiring_private.h \
+ C:\Users\bcps1\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino\Arduino.h \
+ C:\Users\bcps1\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino\binary.h \
+ C:\Users\bcps1\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\variants\standard/pins_arduino.h

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#line 1 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 1 "c:\\Users\\bcps1\\Desktop\\project\\asia_maker_gym_2023\\sketch\\sketch.ino"
 #include <Servo.h>
 //const uint8_t LED_pin[3] = {9, 10, 11};
 //uint32_t color_code = 0xED0CC8;
@@ -7,18 +7,18 @@
 
 //{Horizon servo pin, vertical servo pin}
 const uint8_t Servo_pin[3][2] = {{2, 3}, {4, 5}, {6, 7}};
-uint8_t Servo_deg[3][2] = {{90, 90}, {90, 90}, {90, 90}};
+uint16_t Servo_deg[3][2] = {{90, 90}, {90, 90}, {90, 90}};
 Servo myservo[3][2];
 
 
-#line 12 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 12 "c:\\Users\\bcps1\\Desktop\\project\\asia_maker_gym_2023\\sketch\\sketch.ino"
 void setup();
-#line 38 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 38 "c:\\Users\\bcps1\\Desktop\\project\\asia_maker_gym_2023\\sketch\\sketch.ino"
 void loop();
-#line 12 "c:\\Users\\robot\\Desktop\\Project\\asia maker gym 2023\\sketch\\sketch.ino"
+#line 12 "c:\\Users\\bcps1\\Desktop\\project\\asia_maker_gym_2023\\sketch\\sketch.ino"
 void setup()
 {
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i< 3; i++){
         for(int j = 0; j < 2; j++){
             myservo[i][j].attach(Servo_pin[i][j]);
         }
@@ -46,7 +46,7 @@ void loop()
 {
     
     if(Serial.available()){
-        data = Serial.readStringUntil("M"); ///Serial.readString()
+        data = Serial.readStringUntil('M'); ///Serial.readString()
         flag = 1;
     }
     if(flag){
@@ -56,9 +56,9 @@ void loop()
         String data__ = data.substring(nn+1);
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 2; j++){
-                String degT = data__.substring(((i*2)+j)*4, (((i*2)+j)*4)+3); //(((i*2)+j)*4)+3
+                String degT = data__.substring(((i*2)+j)*5, (((i*2)+j)*5)+3); //(((i*2)+j)*4)+3
                 Servo_deg[i][j] = degT.toInt();
-                myservo[i][j].write(Servo_deg[i][j]);
+                myservo[i][j].writeMicroseconds(Servo_deg[i][j]);
                 //Serial.print(String(Servo_deg[i][j]) + ' ');
             }
         }
@@ -74,6 +74,4 @@ void loop()
     }
 	*/
 }
-
-
 
