@@ -47,7 +47,7 @@ class serial_json:
             self.ser.write(data)
             return False
         except Exception as s:
-            self.error = "請先連線"
+            self.error = "請檢查連線"
             return True
         
     def run_json(self):

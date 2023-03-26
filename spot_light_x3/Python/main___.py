@@ -141,8 +141,10 @@ def loop_():
         trans_data = 'm' + trans_data[0:29]+'M'
         error_state = sj.transport(trans_data.encode('UTF-8'))
         print(trans_data)
-    ##    if error_state is True:
-    ##        messagebox.showinfo("連線失敗", sj.error)
+        if error_state is True:
+            messagebox.showinfo("斷線", sj.error)
+            com_connect['text'] = "連線"
+            sj.disconnect()
         servo_change = False
     
     root.after(30, loop_)
