@@ -95,7 +95,6 @@ def loop_root():
         except:
             port_connect_status["bg"] = "#FF0000"
         time_delay["text"] = str(get_time()-erf_)
-    print(transdata)
     root.after(50, loop_root)
 
 def connect():

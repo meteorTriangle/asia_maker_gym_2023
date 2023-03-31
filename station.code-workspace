@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "spot_light_x3"
+		},
+		{
+			"path": "spot_light_LED"
 		}
 	],
 	"settings": {}
