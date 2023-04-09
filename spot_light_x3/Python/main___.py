@@ -24,13 +24,13 @@ servo_change = False
 run = 1
 
 ###pyserial
-BAUD_RATES = 115200
+BAUD_RATES = 1000000
 
-single_servo_frame = list(range(3))
-horizon_servo_gui = list(range(3))
-vertical_servo_gui = list(range(3))
-vertical_servo = list(range(3))
-horizon_servo = list(range(3))
+single_servo_frame = list(range(12))
+horizon_servo_gui = list(range(12))
+vertical_servo_gui = list(range(12))
+vertical_servo = list(range(12))
+horizon_servo = list(range(12))
 
 vertical_servo_id = id(vertical_servo)
 horizon_servo_id = id(horizon_servo)
@@ -45,7 +45,7 @@ fileTypes = [("JSON","*.json")]
 root = tk.Tk()
 root.title(file_path)
 root.resizable(False, False)
-root.geometry('1280x950')
+root.geometry('1580x950')
 root.iconbitmap("Python\logo.ico")
 
 sj = sser.serial_json(BAUD_RATES)
@@ -129,17 +129,21 @@ def loop_():
             if type(servo_data) is str:
                 messagebox.showinfo("錯誤", servo_data)
             else:
-                for j in range(3):
+                for j in range(12):
                     horizon_servo_gui[j].set(servo_data[j][0])
                     vertical_servo_gui[j].set(servo_data[j][1])
     global servo_change
     if(com_connect['text'] == "斷線" and servo_change):
         trans_data = ''
-        for j in range(3):
+        transdata_time_ = sj.get_R_time()
+        for j in range(12):
             trans_data = trans_data + "{:0>4d}".format(int(horizon_servo_gui[j].get()*2000/180 +500)) + " "
             trans_data = trans_data + "{:0>4d}".format(int(vertical_servo_gui[j].get()*2000/180 +500)) + " "
-        trans_data = 'm' + trans_data[0:29]+'M'
+        trans_data = 'm' + trans_data[0:119]+'M'
+        
         error_state = sj.transport(trans_data.encode('UTF-8'))
+        transdata_time = int(sj.get_R_time() - transdata_time_)
+        delay_display["text"] = str(transdata_time)
         print(trans_data)
         if error_state is True:
             messagebox.showinfo("斷線", sj.error)
@@ -222,9 +226,9 @@ save_file_but.pack(side="left")
 #### save as file
 save_as_file_but = ttk.Button(Top_frame, text="另存新檔", command=save__as)
 save_as_file_but.pack(side="left")
-### logo
-## Logo = tk.Label(Top_frame, image=tk_img, height=38, width=96)
-## Logo.pack(side="left")
+### time
+delay_display = tk.Label(Top_frame, text="0")
+delay_display.pack(side="left")
 
 Lfont = tkf.Font(size=30)
 
@@ -233,17 +237,17 @@ setting_frame = tk.Frame(root, width=1280, height=400)                  ### serv
 setting_frame.pack(side="top")
 
 
-for i in range(3):
+for i in range(12):
     single_servo_frame[i] = tk.Frame(setting_frame, bd=5, relief='groove')
     single_servo_frame[i].grid(column=i, row=0)
-    tittle = tk.Label(single_servo_frame[i], text='Light'+str(i), font=Lfont)
+    tittle = tk.Label(single_servo_frame[i], text='Light'+str(i+1), font=Lfont)
     tittle.pack()
     vertical_servo[i] = tk.DoubleVar()
     horizon_servo[i] = tk.DoubleVar()
-    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=30, resolution=0.1, command=chaange)
-    vertical_servo_gui[i].pack()
-    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=400, variable=horizon_servo[i], orient='horizon', from_=0, to=180, width=30, resolution=0.1, command=chaange)
-    horizon_servo_gui[i].pack(side="bottom")
+    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=15, resolution=0.1, command=chaange)
+    vertical_servo_gui[i].pack(side="left")
+    horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=horizon_servo[i], orient='vertical', from_=0, to=180, width=15, resolution=0.1, command=chaange)
+    horizon_servo_gui[i].pack(side="left")
 
 but_frame = tk.Frame(root)
 but_frame.pack(fill="both")
@@ -289,7 +293,7 @@ timer_label = tk.Label(play_frame, text="00:00.00", font=timer_font, bd=1, relie
 timer_label.pack(side="left")
 
 #### text editor
-txt = scrolledtext.ScrolledText(but_frame, height=500, width=180)
+txt = scrolledtext.ScrolledText(but_frame, height=500, width=230)
 txt.pack()
 
 

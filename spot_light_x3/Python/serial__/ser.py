@@ -42,7 +42,7 @@ class serial_json:
 
     def transport(self, data):
         print(self.ser.is_open)
-        self.ser.reset_output_buffer()
+        ##self.ser.reset_output_buffer()
         try:
             self.ser.write(data)
             return False
@@ -66,7 +66,10 @@ class serial_json:
                 return (self.timer + self.timerPause)
         else:
             return 0
-        
+    
+    def get_R_time(self):
+        return time.time_ns()/1000000
+
     def timer_reset(self):
         self.refTime = time.time_ns()
         self.timerPause = 0

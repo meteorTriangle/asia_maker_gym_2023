@@ -4,26 +4,25 @@
 
 
 //{Horizon servo pin, vertical servo pin}
-const uint8_t Servo_pin[3][2] = {{2, 3}, {4, 5}, {6, 7}};
-uint16_t Servo_deg[3][2] = {{90, 90}, {90, 90}, {90, 90}};
-Servo myservo[3][2];
+const uint8_t Servo_pin[12][2] = {{2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11}, {12, 13}, {22, 23}, {24, 25}, {26, 27}, {28, 29}, {30, 31}, {32, 33}};
+uint16_t Servo_deg[12][2] = {{90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}, {90, 90}};
+Servo myservo[12][2];
 
 
-void setup()
-{
-    for(int i = 0; i< 3; i++){
+void setup(){
+    for(int i = 0; i < 12; i++){
         for(int j = 0; j < 2; j++){
             myservo[i][j].attach(Servo_pin[i][j]);
         }
     }
-    Serial.begin(115200);
+    Serial.begin(1000000);
     Serial.setTimeout(10);
 
     //initial servo
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i < 12; i++){
         myservo[i][0].write(90);//horizon
     }
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i < 12; i++){
         myservo[i][1].write(90);//vertical
     }
     /*  ////LED
@@ -47,7 +46,7 @@ void loop()
         bool flag = 0;
         int nn = data.indexOf('m');
         String data__ = data.substring(nn+1);
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 12; i++){
             for(int j = 0; j < 2; j++){
                 String degT = data__.substring(((i*2)+j)*5, (((i*2)+j)*5)+4); //(((i*2)+j)*4)+3
                 Servo_deg[i][j] = degT.toInt();

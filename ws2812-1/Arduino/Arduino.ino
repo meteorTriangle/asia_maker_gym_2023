@@ -9,7 +9,8 @@ const String hexDigits = "0123456789ABCDEF";
 void setup(){
     pixels.begin();
     pixels.setBrightness(40);
-    Serial.begin(115200);
+    Serial.begin(1000000);
+    pinMode(13, OUTPUT);
 }
 bool flag = 0;
 String data;
@@ -41,12 +42,15 @@ void loop(){
               result <<= 4;
               result |= hexDigits.indexOf(color_str[i][j]);
             }
+
             uint8_t red = (result >> 16) &  0xFF;
             uint8_t green = (result >> 8) & 0xFF;
             uint8_t blue = (result >> 0) &  0xFF;
             pixels.setPixelColor(i, pixels.Color(red, green, blue));
 
         }
+        digitalWrite(13, color_str[0] == "FFFFFF");
+        Serial.println(color_str[0]);
         flag = 0;
         pixels.show();
     }

@@ -6,16 +6,46 @@ class convert:
         self.path = file_path
         self.str = ""
         self.json = None
-        self.name = ["light1", "light2", "light3"]
+        self.name = ["light1", 
+                     "light2", 
+                     "light3",
+                     "light4", 
+                     "light5", 
+                     "light6",
+                     "light7", 
+                     "light8", 
+                     "light9",
+                     "light10", 
+                     "light11", 
+                     "light12"
+                     ]
         self.data = {
             self.name[0]:[],
             self.name[1]:[],
-            self.name[2]:[]
+            self.name[2]:[],
+            self.name[3]:[],
+            self.name[4]:[],
+            self.name[5]:[],
+            self.name[6]:[],
+            self.name[7]:[],
+            self.name[8]:[],
+            self.name[9]:[],
+            self.name[10]:[],
+            self.name[11]:[]
             }
         self.data2 = {
             self.name[0]:{"time": [], "degree":[[],[]]},
             self.name[1]:{"time": [], "degree":[[],[]]},
-            self.name[2]:{"time": [], "degree":[[],[]]}
+            self.name[2]:{"time": [], "degree":[[],[]]},
+            self.name[3]:{"time": [], "degree":[[],[]]},
+            self.name[4]:{"time": [], "degree":[[],[]]},
+            self.name[5]:{"time": [], "degree":[[],[]]},
+            self.name[6]:{"time": [], "degree":[[],[]]},
+            self.name[7]:{"time": [], "degree":[[],[]]},
+            self.name[8]:{"time": [], "degree":[[],[]]},
+            self.name[9]:{"time": [], "degree":[[],[]]},
+            self.name[10]:{"time": [], "degree":[[],[]]},
+            self.name[11]:{"time": [], "degree":[[],[]]}
             }
 
     def convert(self):
@@ -30,7 +60,7 @@ class convert:
             self.json = json.load(self.str)
         except Exception as E:
             return "格式錯誤"
-        for j in range(3):
+        for j in range(12):
             Ll1 = self.json[self.name[j]]
             for i in range(len(Ll1)):
                 Lz2 = {"time": 0, "degree": [0, 0]}
@@ -47,8 +77,8 @@ class convert:
         return False
     
     def run(self, time_ms):
-        vaa = [[0,0], [0,0], [0,0]]
-        for j in range(3):
+        vaa = [[0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0]]
+        for j in range(12):
             ls1 = self.data2[self.name[j]]
             vaa[j][0] = numpy.interp(time_ms/1000, ls1["time"], ls1["degree"][0], left=0)
             vaa[j][1] = numpy.interp(time_ms/1000, ls1["time"], ls1["degree"][1], left=0)

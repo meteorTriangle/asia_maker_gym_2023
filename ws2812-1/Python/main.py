@@ -87,6 +87,7 @@ def loop_root():
         color_list.append(LED_DEMO[i]["bg"])
     transdata = "m"
     transdata += "".join(color_list) + "M"
+    print(transdata)
     if(ser.is_open):
         erf_ = get_time()
         try:
@@ -107,7 +108,7 @@ def connect():
         else:
             COM_PORT_index = com_list_description.index(COM_PORT)
             ser.port = port_name[COM_PORT_index]
-            ser.baudrate = 115200
+            ser.baudrate = 1000000
             ser.timeout = 0.01
             ser.write_timeout = 0.1
             try:
