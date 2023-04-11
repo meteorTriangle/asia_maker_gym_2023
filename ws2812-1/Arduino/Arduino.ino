@@ -27,7 +27,13 @@ void loop(){
     */
     if(Serial.available()){
         data = Serial.readStringUntil('M'); ///Serial.readString()
-        flag = 1;
+        if(data == "get device name"){
+            Serial.print("ws2812-1");
+            pinMode(13, HIGH);
+        }
+        else{
+            flag = 1;
+        }
     }
     if(flag){
         //Serial.println(data);

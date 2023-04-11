@@ -15,6 +15,10 @@ import serial.tools.list_ports_windows
 run = 0
 color_H = float(0)
 ser = serial.Serial()
+ser.baudrate = 1000000
+ser.timeout = 0.1
+ser.write_timeout = 0.1
+##ser.set_buffer_size(r)
 com_list_description = []
 port_name = []
 
@@ -36,13 +40,7 @@ def com_list_refresh(arg=None):
     port_name.clear()
     for p in port__:
         port_name.append(p.name)
-        com_list_description.append(p.description)
-    if(len(com_list_description) == 0):
-        com_list_description.append("請選擇序列埠")
-    if(run == 1):
-        port_menu['menu'].delete(0, 'end')
-        for i in com_list_description:
-            port_menu['menu'].add_command(label=i, command=tk._setit(port_GUI, i))
+    return port_name
 
 def hsv2rgb(h, s, v):
     h = h/255
@@ -70,7 +68,7 @@ def loop_root():
             LED_enable[30-i] = LED_enable[(30-i) - 1]
         LED_enable[0] = control_button["state"] != "normal"
         timer_ref = get_time()
-    if(port_connect_button["text"] == "斷線"):
+    if(port_connect["text"] == "斷線"):
         com_list_refresh()
         try:
             COM_PORT_index = port_name.index(ser.port)
@@ -87,7 +85,6 @@ def loop_root():
         color_list.append(LED_DEMO[i]["bg"])
     transdata = "m"
     transdata += "".join(color_list) + "M"
-    print(transdata)
     if(ser.is_open):
         erf_ = get_time()
         try:
@@ -98,68 +95,96 @@ def loop_root():
         time_delay["text"] = str(get_time()-erf_)
     root.after(50, loop_root)
 
+def search_port():
+    ser_name = com_list_refresh()
+    i = 0
+    while i < len(ser_name):
+        try:
+            ser.port = ser_name[i]
+            ser.open()
+            time.sleep(2.5)
+            ser.write("get device nameM".encode("ASCII"))
+            time.sleep(0.3)
+            if ser.readable():
+                recevice = str(ser.read_all(), "ASCII")
+                ser.close()
+                print(recevice)
+                if recevice == "ws2812-1":
+                    return ser_name[i]
+            ser.close()
+        except:
+            print("err")
+            pass
+        i += 1
+    try:
+        ser.close()
+    except:
+        pass
+    return False
+
 def connect():
-    COM_PORT = port_GUI.get()
     error = 0
-    if(port_connect_button["text"] == "連線"):
-        if COM_PORT == "請選擇序列埠":
-            messagebox.showerror("Error", '請選擇序列埠')
+    if(ser.is_open == False):
+        COM_PORT = search_port()
+        print(COM_PORT)
+        if COM_PORT == False:
+            messagebox.showerror("Error", '請插入Arduino')
             error = 1
         else:
-            COM_PORT_index = com_list_description.index(COM_PORT)
-            ser.port = port_name[COM_PORT_index]
-            ser.baudrate = 1000000
-            ser.timeout = 0.01
-            ser.write_timeout = 0.1
+            ser.port = COM_PORT
             try:
                 ser.open()
+                port_connect["text"] = "斷線"
             except Exception as err:
                 error = 1
                 messagebox.showerror("error", err)
-            print(port_name[COM_PORT_index])
-        if error == 0:
-            port_connect_button["text"] = "斷線"
+            print(COM_PORT)
     else:
-        port_connect_button["text"] = "連線"
         ser.close()
+        port_connect["text"] = "連線"
         pass
 
 
 root = tk.Tk()
 root.title("WS2812 controller")
 root.resizable(False, False)
-root.geometry('1000x60')
+root.geometry('1000x600')
 root.iconbitmap("Python\logo.ico")
 
 com_list_refresh()
-print(com_list_description)
+print(port_name)
+
+root_menu = tk.Menu(root)
+file_menu = tk.Menu(root_menu)
+file_menu.add_command(label="open")
+file_menu.add_command(label="save")
+file_menu.add_command(label="save as")
+root_menu.add_cascade(label="file", menu=file_menu)
+
+
 
 serial_frame = tk.Frame(root)
 serial_frame.pack(side="top", fill="x")
-port_label = ttk.Label(serial_frame, text="序列埠:").pack(side='left')
-port_GUI = tk.StringVar()
-port_GUI.set("請選擇序列埠")
-port_menu = tk.OptionMenu(serial_frame, port_GUI, *com_list_description, command=com_list_refresh)
-port_menu.pack(side="left")
-port_refresh_button = ttk.Button(serial_frame, text="重新整理", command=com_list_refresh)
-port_refresh_button.pack(side="left")
-port_connect_button = ttk.Button(serial_frame, text="連線", command=connect)
-port_connect_button.pack(side="left")
+port_connect = tk.Button(serial_frame, text = "連線", command=connect)
+port_connect.pack(side="left")
 port_connect_status = tk.Frame(serial_frame, width=500)
 port_connect_status.pack(side="left", fill="both")
 time_delay = tk.Label(serial_frame)
 time_delay.pack(side="left")
 
 ## light control button
-control_frame = tk.Frame(root).pack(side="top", fill="x")
-control_button = tk.Button(control_frame, text="push", width=25, height=30) ## , command=trigger
+control_frame = tk.Frame(root)
+control_frame.pack(side="top", fill="x")
+control_button = tk.Button(control_frame, text="push", width=25, height=1) ## , command=trigger
 control_button.pack(side="left")
-DEMO_frame = tk.Frame(control_frame).pack(side="left", fill="x")
+DEMO_frame = tk.Frame(root)
+DEMO_frame.pack(side="top", fill="x")
 LED_DEMO = []
 for i in range(31):
     LED_DEMO.append(tk.Frame(DEMO_frame, width=20, height=30, bd=5, relief='groove', background="#000000"))
     LED_DEMO[i].pack(side="left")
 run = 1
+root.config(menu=root_menu)
 loop_root()
 root.mainloop()
 
