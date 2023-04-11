@@ -56,7 +56,9 @@ void loop(){
         }
         if(command == "03"){                  //03 I2C address get // format "03" //ex "03"
             uint8_t I2C_address = EEPROM.read(I2C_address_EE);
-            Serial.print(String(I2C_address) + "M");
+            char c[2];
+            sprintf(c, "%02d", I2C_address);
+            Serial.print(String(c) + "M");
         }
         if(command == "04"){                  //04 adj Servo horizontal // format "04" //ex "04"
             ServoAdj_Horizon = Servo_H.readMicroseconds();
