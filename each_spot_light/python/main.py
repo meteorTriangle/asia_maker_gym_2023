@@ -28,6 +28,8 @@ def port_refresh():
         com_list_name.append(p.name)
         print(p.description)
         print(p.name)
+    if len(ports) == 0:
+        com_list_description.append("無")
     print(len(ports), 'ports found')
     
     ###
@@ -40,8 +42,6 @@ def port_refresh():
             port_menu['menu'].add_command(label=i, command=tk._setit(port_GUI, i))
 
 def loop_():
-    ver_servo = vertical_servo_gui.get() + 1500
-    hor_servo = horizon_servo_gui.get() + 1500
     root.after(30, loop_)
 
 def connect():
@@ -100,6 +100,40 @@ def address_get():
         except Exception as E:
             messagebox.showerror("錯誤", E)
 
+def change(num):
+    ver_servo = vertical_servo_gui.get() + 1500
+    hor_servo = horizon_servo_gui.get() + 1500
+    trans_data = "06 " + "{:0>4d}".format(hor_servo) + " " + "{:0>4d}".format(ver_servo) + "M"
+    if(ser.is_open):
+        try:
+            ser.write(trans_data.encode("UTF-8"))
+        except Exception as E:
+            messagebox.showerror('Error', E)
+    ###vertical_servo_gui.set(0)
+    ###horizon_servo_gui.set(0)
+
+def set_horizon_0():
+    if(ser.is_open):
+        try:
+            ser.write("04M".encode("UTF-8"))
+            horizon_servo_gui.set(0)
+        except Exception as E:
+            messagebox.showerror("error", E)
+    else:
+        messagebox.showwarning("沒有連線", "請先連線")
+
+def set_vertical_0():
+    if(ser.is_open):
+        try:
+            ser.write("05M".encode("UTF-8"))
+            vertical_servo_gui.set(0)
+        except Exception as E:
+            messagebox.showerror("error", E)
+    else:
+        messagebox.showwarning("沒有連線", "請先連線")
+
+    
+
 root = tk.Tk()
 root.title("投射燈調整程式")
 root.resizable(False, False)
@@ -128,19 +162,23 @@ address_label = tk.Label(address_Frame, text="位址:")
 address_label.pack(side="left")
 address_text = tk.Entry(address_Frame, width=5)
 address_text.pack(side="left")
-address_set_but = tk.Button(address_Frame, text="設定", command=address_set)
+address_set_but = ttk.Button(address_Frame, text="設定", command=address_set)
 address_set_but.pack(side="left")
-address_read_but = tk.Button(address_Frame, text="當下位址查詢", command=address_get)
+address_read_but = ttk.Button(address_Frame, text="當下位址查詢", command=address_get)
 address_read_but.pack(side="left")
+servo_hor_set0 = ttk.Button(address_Frame, text="設定水平伺服機為中心點", command=set_horizon_0)
+servo_hor_set0.pack(side="left")
+servo_ver_set0 = ttk.Button(address_Frame, text="設定垂直伺服機為中心點", command=set_vertical_0)
+servo_ver_set0.pack(side="left")
 
 
 servo_GUI = tk.Frame(root)
 servo_GUI.pack(side="top")
 vertical_servo = tk.IntVar()
 horizon_servo =  tk.IntVar()
-vertical_servo_gui = tk.Scale(servo_GUI, length=400, variable=vertical_servo, orient='vertical', from_=-200, to=200, width=15, resolution=1)
+vertical_servo_gui = tk.Scale(servo_GUI, length=500, variable=vertical_servo, orient='vertical', from_=-400, to=400, width=15, resolution=1, command=change, label="vertical")
 vertical_servo_gui.pack(side="left")
-horizon_servo_gui = tk.Scale(servo_GUI, length=400, variable=horizon_servo, orient='vertical', from_=-200, to=200, width=15, resolution=1)
+horizon_servo_gui = tk.Scale(servo_GUI, length=500, variable=horizon_servo, orient='vertical', from_=-400, to=400, width=15, resolution=1, command=change, label="horizon")
 horizon_servo_gui.pack(side="left")#### servo_adj
 
 

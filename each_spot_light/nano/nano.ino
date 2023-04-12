@@ -29,6 +29,20 @@ void setup(){
     }
     ServoAdj_Horizon = ((uint16_t)EEPROM.read(ServoAdj_Horizon_H_EE) << 8) | (uint16_t)EEPROM.read(ServoAdj_Horizon_L_EE);
     ServoAdj_Vertical = ((uint16_t)EEPROM.read(ServoAdj_Vertical_H_EE) << 8) | (uint16_t)EEPROM.read(ServoAdj_Vertical_L_EE);
+    if(ServoAdj_Horizon > 2500 || ServoAdj_Horizon < 500){
+        ServoAdj_Horizon = 1500;
+        uint8_t ServoAdj_Horizon_H = (ServoAdj_Horizon >> 8) & 0xFF;
+        uint8_t ServoAdj_Horizon_L = (ServoAdj_Horizon) & 0xFF;
+        EEPROM.write(ServoAdj_Horizon_H_EE, ServoAdj_Horizon_H);
+        EEPROM.write(ServoAdj_Horizon_L_EE, ServoAdj_Horizon_L);
+    }
+    if(ServoAdj_Vertical > 2500 || ServoAdj_Vertical < 500){
+        ServoAdj_Vertical = 1500;
+        uint8_t ServoAdj_Vertical_H = (ServoAdj_Vertical >> 8) & 0xFF;
+        uint8_t ServoAdj_Vertical_L = (ServoAdj_Vertical) & 0xFF;
+        EEPROM.write(ServoAdj_Vertical_H_EE, ServoAdj_Vertical_H);
+        EEPROM.write(ServoAdj_Vertical_L_EE, ServoAdj_Vertical_L);
+    }
     Wire.begin(I2C_address);
     Servo_H.attach(pin_Servo_Horizon);
     Servo_V.attach(pin_Servo_Vertical);
