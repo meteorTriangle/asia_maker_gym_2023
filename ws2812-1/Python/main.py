@@ -61,7 +61,7 @@ def loop_root():
     for i in range(31):
         if(LED_enable[i]):
             H = color_H - 5*i
-            color = hsv2rgb(H%256, 180, 180)
+            color = hsv2rgb(H%256, 250, 250)
             LED_DEMO[i]["background"] = color
         else:
             LED_DEMO[i]["background"] = "#000000"
@@ -128,8 +128,18 @@ def connect():
 root = tk.Tk()
 root.title("WS2812 controller")
 root.resizable(False, False)
-root.geometry('1000x60')
+root.geometry('1000x600')
 root.iconbitmap("Python\logo.ico")
+
+com_list_refresh()
+print(port_name)
+
+root_menu = tk.Menu(root)
+file_menu = tk.Menu(root_menu)
+file_menu.add_command(label="open")
+file_menu.add_command(label="save")
+file_menu.add_command(label="save as")
+root_menu.add_cascade(label="file", menu=file_menu)
 
 com_list_refresh()
 print(com_list_description)
@@ -150,16 +160,20 @@ port_connect_status.pack(side="left", fill="both")
 time_delay = tk.Label(serial_frame)
 time_delay.pack(side="left")
 
+
 ## light control button
-control_frame = tk.Frame(root).pack(side="top", fill="x")
-control_button = tk.Button(control_frame, text="push", width=25, height=30) ## , command=trigger
+control_frame = tk.Frame(root)
+control_frame.pack(side="top", fill="x")
+control_button = tk.Button(control_frame, text="push", width=25, height=1) ## , command=trigger
 control_button.pack(side="left")
-DEMO_frame = tk.Frame(control_frame).pack(side="left", fill="x")
+DEMO_frame = tk.Frame(root)
+DEMO_frame.pack(side="top", fill="x")
 LED_DEMO = []
 for i in range(31):
     LED_DEMO.append(tk.Frame(DEMO_frame, width=20, height=30, bd=5, relief='groove', background="#000000"))
     LED_DEMO[i].pack(side="left")
 run = 1
+root.config(menu=root_menu)
 loop_root()
 root.mainloop()
 
