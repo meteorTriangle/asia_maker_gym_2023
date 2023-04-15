@@ -129,7 +129,7 @@ root = tk.Tk()
 root.title("WS2812 controller")
 root.resizable(False, False)
 root.geometry('1000x600')
-root.iconbitmap("Python\logo.ico")
+root.iconbitmap("logo.ico")
 
 com_list_refresh()
 print(port_name)
