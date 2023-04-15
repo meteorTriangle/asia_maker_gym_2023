@@ -1,15 +1,15 @@
 #include "Adafruit_NeoPixel.h"
 
 #define PIN 2
-#define NUMPIXELS 120
+#define NUMPIXELS 31
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 uint16_t hh = 0;
 const String hexDigits = "0123456789ABCDEF";
 
 void setup(){
     pixels.begin();
-    pixels.setBrightness(40);
-    Serial.begin(1000000);
+    pixels.setBrightness(255);
+    Serial.begin(250000);
     pinMode(13, OUTPUT);
 }
 bool flag = 0;
@@ -27,7 +27,13 @@ void loop(){
     */
     if(Serial.available()){
         data = Serial.readStringUntil('M'); ///Serial.readString()
-        flag = 1;
+        if(data == "get device name"){
+            Serial.print("ws2812-1");
+            pinMode(13, HIGH);
+        }
+        else{
+            flag = 1;
+        }
     }
     if(flag){
         //Serial.println(data);

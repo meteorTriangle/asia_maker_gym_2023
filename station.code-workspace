@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "spot_light_LED"
+		},
+		{
+			"path": "each_spot_light"
 		}
 	],
 	"settings": {}
