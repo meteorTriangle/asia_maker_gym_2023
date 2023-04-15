@@ -15,7 +15,7 @@ import serial.tools.list_ports_windows
 run = 0
 color_H = float(0)
 ser = serial.Serial()
-ser.baudrate = 1000000
+ser.baudrate = 250000
 ser.timeout = 0.1
 ser.write_timeout = 0.1
 ##ser.set_buffer_size(r)
@@ -59,7 +59,7 @@ def loop_root():
     for i in range(31):
         if(LED_enable[i]):
             H = color_H - 5*i
-            color = hsv2rgb(H%256, 180, 180)
+            color = hsv2rgb(H%256, 255, 127)
             LED_DEMO[i]["background"] = color
         else:
             LED_DEMO[i]["background"] = "#000000"
@@ -96,6 +96,7 @@ def loop_root():
     root.after(50, loop_root)
 
 def search_port():
+    '''
     ser_name = com_list_refresh()
     i = 0
     while i < len(ser_name):
@@ -120,7 +121,8 @@ def search_port():
         ser.close()
     except:
         pass
-    return False
+    '''
+    return 'COM13'
 
 def connect():
     error = 0
