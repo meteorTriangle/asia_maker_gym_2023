@@ -4,3 +4,4 @@
 /ws2812-1/Python/build/
 /ws2812-1/Python/dist/
 *.stl
+*.pyc

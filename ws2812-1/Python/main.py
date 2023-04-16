@@ -79,7 +79,6 @@ def loop_root():
         color_list.append(LED_DEMO[i]["bg"])
     transdata = "m"
     transdata += "".join(color_list) + "M"
-    print(transdata)
     if(ser.is_open):
         erf_ = get_time()
         try:
@@ -88,7 +87,7 @@ def loop_root():
         except:
             port_connect_status["bg"] = "#FF0000"
         time_delay["text"] = str(get_time()-erf_)
-    root.after(50, loop_root)
+    root.after(10, loop_root)
 
 def connect():
     COM_PORT = port_GUI.get()

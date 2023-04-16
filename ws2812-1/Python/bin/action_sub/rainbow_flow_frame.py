@@ -3,9 +3,9 @@ import tkinter as tk
 class rainbow_flow:
     def __init__(self, LED_count, start_H):
         self.output = []
-        self.colorchangeSpeed = 4.5
-        self.color_diff = 5
-        self.flow_period_ms = 40
+        self.colorchangeSpeed = 0.25
+        self.color_diff = 0.25
+        self.flow_period_ms = 20
         self.color_S = 253
         self.color_V = 253
         self.LED_count = LED_count
@@ -20,6 +20,7 @@ class rainbow_flow:
             for i in range(self.LED_count -1):
                 self.LED_enable[self.LED_count-1-i] = self.LED_enable[(self.LED_count-1-i) - 1]
             self.LED_enable[0] = button_state
+            self.latest_time = ms.get_time_ms()
         for i in range(self.LED_count):
             return_color.append(
                 ms.hsv2rgb(
@@ -44,10 +45,11 @@ class rainbow_flow_frame:
             variable = self.flow_period_ms_Var, 
             length = 500,
             from_ = 1,
-            to = 4,
+            to = 8,
             resolution = 1,
-            label="流動速度",
-            orient="horizon"
+            label = "流動速度",
+            orient = "horizon",
+            command = self.flow_period_ms_Scale_change
             )
         self.flow_period_ms_Scale.pack(side="top")
 
@@ -93,3 +95,5 @@ class rainbow_flow_frame:
         self.rainbow_process.color_diff = float(value)
     def colorchangeSpeed_Scale_change(self, value):
         self.rainbow_process.colorchangeSpeed = float(value)
+    def flow_period_ms_Scale_change(self, value):
+        self.rainbow_process.flow_period_ms = float(value)*20
