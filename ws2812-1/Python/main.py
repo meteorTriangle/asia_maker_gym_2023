@@ -15,6 +15,8 @@ import serial.tools.list_ports_windows
 run = 0
 color_H = float(0)
 ser = serial.Serial()
+
+
 com_list_description = []
 port_name = []
 
@@ -161,11 +163,19 @@ time_delay = tk.Label(serial_frame)
 time_delay.pack(side="left")
 
 
+##function selection
+function_var = tk.StringVar()
+function_var.set('apple')
+function_selector = tk.OptionMenu(serial_frame, function_var, "ee")
+function_selector.pack()
+
 ## light control button
-control_frame = tk.Frame(root)
+control_frame = tk.Frame(root, height=200, bd=2, relief='groove')
 control_frame.pack(side="top", fill="x")
 control_button = tk.Button(control_frame, text="push", width=25, height=1) ## , command=trigger
 control_button.pack(side="left")
+
+
 DEMO_frame = tk.Frame(root)
 DEMO_frame.pack(side="top", fill="x")
 LED_DEMO = []

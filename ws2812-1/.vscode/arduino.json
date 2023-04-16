@@ -1,6 +1,0 @@
-{
-    "board": "arduino:avr:nano",
-    "sketch": "..\\each_spot_light\\nano\\nano.ino",
-    "port": "COM10",
-    "configuration": "cpu=atmega328"
-}
