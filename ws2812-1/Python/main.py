@@ -10,6 +10,8 @@ import colorsys
 import time
 import serial
 import serial.tools.list_ports_windows
+from bin.action_sub import rainbow_flow_frame as rff
+
 
 
 run = 0
@@ -57,21 +59,9 @@ def hsv2rgb(h, s, v):
     return("#" + "".join(RGB_))
 
 def loop_root():
-    global color_H
-    global timer_ref
-    color_H += 4.5
+    LED___ = rainbow_flow_frame.run()
     for i in range(31):
-        if(LED_enable[i]):
-            H = color_H - 5*i
-            color = hsv2rgb(H%256, 250, 250)
-            LED_DEMO[i]["background"] = color
-        else:
-            LED_DEMO[i]["background"] = "#000000"
-    if(get_time()-timer_ref>40):
-        for i in range(30):
-            LED_enable[30-i] = LED_enable[(30-i) - 1]
-        LED_enable[0] = control_button["state"] != "normal"
-        timer_ref = get_time()
+        LED_DEMO[i]["background"] = LED___[i]
     if(port_connect_button["text"] == "斷線"):
         com_list_refresh()
         try:
@@ -98,7 +88,7 @@ def loop_root():
         except:
             port_connect_status["bg"] = "#FF0000"
         time_delay["text"] = str(get_time()-erf_)
-    root.after(10, loop_root)
+    root.after(50, loop_root)
 
 def connect():
     COM_PORT = port_GUI.get()
@@ -172,14 +162,11 @@ function_selector.pack()
 ## light control button
 control_frame = tk.Frame(root, height=200, bd=2, relief='groove')
 control_frame.pack(side="top", fill="x")
-rainbow_flow_frame = tk.Frame(control_frame)
-rainbow_flow_frame.pack(fill="both")
-control_button = tk.Button(rainbow_flow_frame, text="push", width=25, height=1) ## , command=trigger
-control_button.pack(side="left")
-
+rainbow_flow_frame = rff.rainbow_flow_frame(31, control_frame)
+rainbow_flow_frame.show()
 
 DEMO_frame = tk.Frame(root)
-DEMO_frame.pack(side="top", fill="x")
+DEMO_frame.pack(side="bottom", fill="x")
 LED_DEMO = []
 for i in range(31):
     LED_DEMO.append(tk.Frame(DEMO_frame, width=20, height=30, bd=5, relief='groove', background="#000000"))
