@@ -8,8 +8,8 @@ const String hexDigits = "0123456789ABCDEF";
 
 void setup(){
     pixels.begin();
-    pixels.setBrightness(40);
-    Serial.begin(1000000);
+    pixels.setBrightness(255);
+    Serial.begin(250000);
     pinMode(13, OUTPUT);
 }
 bool flag = 0;

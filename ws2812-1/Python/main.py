@@ -15,7 +15,7 @@ import serial.tools.list_ports_windows
 run = 0
 color_H = float(0)
 ser = serial.Serial()
-ser.baudrate = 1000000
+ser.baudrate = 250000
 ser.timeout = 0.1
 ser.write_timeout = 0.1
 ##ser.set_buffer_size(r)
@@ -59,7 +59,7 @@ def loop_root():
     for i in range(31):
         if(LED_enable[i]):
             H = color_H - 5*i
-            color = hsv2rgb(H%256, 180, 180)
+            color = hsv2rgb(H%256, 250, 250)
             LED_DEMO[i]["background"] = color
         else:
             LED_DEMO[i]["background"] = "#000000"
@@ -172,11 +172,19 @@ port_connect_status.pack(side="left", fill="both")
 time_delay = tk.Label(serial_frame)
 time_delay.pack(side="left")
 
+##function selection
+function_var = tk.StringVar()
+function_var.set('apple')
+function_selector = tk.OptionMenu(serial_frame, function_var, "ee")
+function_selector.pack()
+
 ## light control button
-control_frame = tk.Frame(root)
+control_frame = tk.Frame(root, height=200, bd=2, relief='groove')
 control_frame.pack(side="top", fill="x")
 control_button = tk.Button(control_frame, text="push", width=25, height=1) ## , command=trigger
 control_button.pack(side="left")
+
+
 DEMO_frame = tk.Frame(root)
 DEMO_frame.pack(side="top", fill="x")
 LED_DEMO = []
