@@ -1,7 +1,5 @@
 {
-    "sketch": "sketch\\sketch.ino",
-    "output": "build",
-    "board": "arduino:avr:mega",
-    "port": "COM9",
-    "configuration": "cpu=atmega2560"
+    "sketch": "nano\\nano.ino",
+    "board": "arduino:avr:uno",
+    "port": "COM3"
 }

@@ -1,4 +1,4 @@
-#include "Adafruit_NeoPixel.h"
+#include "2812_lib/Adafruit_NeoPixel.h"
 
 #define PIN 2
 #define NUMPIXELS 31

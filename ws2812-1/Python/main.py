@@ -98,7 +98,7 @@ def loop_root():
         except:
             port_connect_status["bg"] = "#FF0000"
         time_delay["text"] = str(get_time()-erf_)
-    root.after(50, loop_root)
+    root.after(10, loop_root)
 
 def connect():
     COM_PORT = port_GUI.get()
@@ -131,7 +131,7 @@ root = tk.Tk()
 root.title("WS2812 controller")
 root.resizable(False, False)
 root.geometry('1000x600')
-root.iconbitmap("logo.ico")
+root.iconbitmap("bin/logo.ico")
 
 com_list_refresh()
 print(port_name)
@@ -165,14 +165,16 @@ time_delay.pack(side="left")
 
 ##function selection
 function_var = tk.StringVar()
-function_var.set('apple')
-function_selector = tk.OptionMenu(serial_frame, function_var, "ee")
+function_var.set('rainbow flow')
+function_selector = tk.OptionMenu(serial_frame, function_var, "rainbow flow", "")
 function_selector.pack()
 
 ## light control button
 control_frame = tk.Frame(root, height=200, bd=2, relief='groove')
 control_frame.pack(side="top", fill="x")
-control_button = tk.Button(control_frame, text="push", width=25, height=1) ## , command=trigger
+rainbow_flow_frame = tk.Frame(control_frame)
+rainbow_flow_frame.pack(fill="both")
+control_button = tk.Button(rainbow_flow_frame, text="push", width=25, height=1) ## , command=trigger
 control_button.pack(side="left")
 
 
