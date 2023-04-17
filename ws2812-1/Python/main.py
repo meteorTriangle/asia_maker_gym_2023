@@ -11,8 +11,75 @@ import time
 import serial
 import serial.tools.list_ports_windows
 from bin.action_sub import rainbow_flow_frame as rff
+from bin.action_sub import gradual_change as gc
+import pyaudio
 
+import sounddevice as sd
+import numpy as np
 
+volume_norm = 0
+
+def print_sound(indata, outdata, frames, time, status):
+    global volume_norm 
+    volume_norm = np.linalg.norm(indata)*10
+    
+    print ("|" * int(volume_norm))
+'''
+with sd.Stream(callback=print_sound):
+    sd.sleep(10000)
+'''
+'''
+sound  = True
+CHUNK = 1024
+FORMAT = pyaudio.paInt16
+CHANNELS = 2
+RATE = 44100
+RECORD_SECONDS = 1000
+p = pyaudio.PyAudio()
+stream = p.open(format = FORMAT,
+                channels = CHANNELS,
+                rate = RATE,
+                input = True,
+                input_device_index = 2,
+                frames_per_buffer = CHUNK)
+
+stream_data = stream.read(CHUNK)
+print(stream_data)
+
+'''
+class volume__:
+    def __init__(self, LED_count, start_H):
+        self.output = []
+        self.colorchangeSpeed = 0.25
+        self.color_diff = 0.25
+        self.flow_period_ms = 20
+        self.color_S = 253
+        self.color_V = 253
+        self.LED_count = LED_count
+        self.now_color_H = start_H
+        self.LED_enable = []
+        for i in range(self.LED_count):
+            self.LED_enable.append(0)
+        
+        self.latest_time = rff.ms.get_time_ms()
+        self.ss = sd.Stream(callback=print_sound, device=("rrrStereo Mix (Realtek(R) Audio, MME", None))
+        self.ss.start()
+    def run(self):
+        return_color = []
+        global volume_norm 
+        ##volume_norm = np.linalg.norm(self.ss.read(1000))*10
+        for i in range(self.LED_count):
+            self.LED_enable[i] = int(volume_norm) > i
+        for i in range(self.LED_count):
+            return_color.append(
+                rff.ms.hsv2rgb(
+                    (self.now_color_H - self.color_diff*i) % 256, 
+                    self.color_S * self.LED_enable[i], 
+                    self.color_V * self.LED_enable[i]
+                )
+            )
+        self.now_color_H += self.colorchangeSpeed
+        return return_color
 
 run = 0
 color_H = float(0)
@@ -59,7 +126,7 @@ def hsv2rgb(h, s, v):
     return("#" + "".join(RGB_))
 
 def loop_root():
-    LED___ = rainbow_flow_frame.run()
+    LED___ = vvv.run()
     for i in range(31):
         LED_DEMO[i]["background"] = LED___[i]
     if(port_connect_button["text"] == "斷線"):
@@ -120,7 +187,7 @@ root = tk.Tk()
 root.title("WS2812 controller")
 root.resizable(False, False)
 root.geometry('1000x600')
-root.iconbitmap("bin/logo.ico")
+root.iconbitmap("Python/bin/logo.ico")
 
 com_list_refresh()
 print(port_name)
@@ -172,6 +239,7 @@ for i in range(31):
     LED_DEMO[i].pack(side="left")
 run = 1
 root.config(menu=root_menu)
+vvv = volume__(31, 5)
 loop_root()
 root.mainloop()
 
