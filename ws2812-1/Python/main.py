@@ -21,9 +21,9 @@ volume_norm = 0
 
 def print_sound(indata, outdata, frames, time, status):
     global volume_norm 
-    volume_norm = np.linalg.norm(indata)*10
+    volume_norm = pow(np.linalg.norm(indata)*7, 3.5)
     
-    print ("|" * int(volume_norm))
+    ####print ("|" * int(volume_norm))
 '''
 with sd.Stream(callback=print_sound):
     sd.sleep(10000)
@@ -50,8 +50,8 @@ print(stream_data)
 class volume__:
     def __init__(self, LED_count, start_H):
         self.output = []
-        self.colorchangeSpeed = 0.25
-        self.color_diff = 0.25
+        self.colorchangeSpeed = 0
+        self.color_diff = (start_H - 0) / LED_count
         self.flow_period_ms = 20
         self.color_S = 253
         self.color_V = 253
@@ -154,7 +154,7 @@ def loop_root():
         except:
             port_connect_status["bg"] = "#FF0000"
         time_delay["text"] = str(get_time()-erf_)
-    root.after(10, loop_root)
+    root.after(50, loop_root)
 
 def connect():
     COM_PORT = port_GUI.get()
@@ -166,9 +166,9 @@ def connect():
         else:
             COM_PORT_index = com_list_description.index(COM_PORT)
             ser.port = port_name[COM_PORT_index]
-            ser.baudrate = 1000000
+            ser.baudrate = 250000
             ser.timeout = 0.01
-            ser.write_timeout = 0.1
+            ser.write_timeout = 0.05
             try:
                 ser.open()
             except Exception as err:
@@ -222,7 +222,7 @@ time_delay.pack(side="left")
 ##function selection
 function_var = tk.StringVar()
 function_var.set('rainbow flow')
-function_selector = tk.OptionMenu(serial_frame, function_var, "rainbow flow", "")
+function_selector = tk.OptionMenu(serial_frame, function_var, "rainbow flow", "music")
 function_selector.pack()
 
 ## light control button
@@ -239,7 +239,7 @@ for i in range(31):
     LED_DEMO[i].pack(side="left")
 run = 1
 root.config(menu=root_menu)
-vvv = volume__(31, 5)
+vvv = volume__(31, 85)
 loop_root()
 root.mainloop()
 
