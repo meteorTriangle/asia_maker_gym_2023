@@ -46,5 +46,13 @@ class volume__:
         self.ss.start()
     def stop(self):
         self.ss.stop()
+
+    def get_device_list(self) -> list:
+        return sd._get_device_id()
     
     ####print ("|" * int(volume_norm))
+
+
+    class volume_frame:
+        def __init__(self) -> None:
+            pass
