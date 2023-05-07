@@ -16,14 +16,18 @@ import pyaudio
 
 import sounddevice as sd
 import numpy as np
+import scipy.signal
 
 volume_norm = 0
 
 def print_sound(indata, outdata, frames, time, status):
     global volume_norm 
-    volume_norm = pow(np.linalg.norm(indata)*7, 3.5)
+    volume_norm = pow(np.linalg.norm(indata)*0.8, 1.6)
+    ##caa, cbb = scipy.signal.butter(40, 1000, output='ba', analog=True)
+    ##filtered = scipy.signal.sosfilt(caa, indata)
+    ##volume_norm = pow(np.linalg.norm(filtered)*0.8, 1.6)
     
-    ####print ("|" * int(volume_norm))
+    ###print ("|" * int(volume_norm))
 '''
 with sd.Stream(callback=print_sound):
     sd.sleep(10000)
@@ -154,7 +158,7 @@ def loop_root():
         except:
             port_connect_status["bg"] = "#FF0000"
         time_delay["text"] = str(get_time()-erf_)
-    root.after(50, loop_root)
+    root.after(80, loop_root)
 
 def connect():
     COM_PORT = port_GUI.get()
@@ -166,9 +170,10 @@ def connect():
         else:
             COM_PORT_index = com_list_description.index(COM_PORT)
             ser.port = port_name[COM_PORT_index]
-            ser.baudrate = 250000
-            ser.timeout = 0.01
-            ser.write_timeout = 0.05
+            ser.baudrate = 230400
+            ser.timeout = 0.1
+            ser.write_timeout = 0.1
+            ser.set_buffer_size(100, 4000)
             try:
                 ser.open()
             except Exception as err:

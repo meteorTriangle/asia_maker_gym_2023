@@ -1,6 +1,7 @@
-#include "2812_lib/Adafruit_NeoPixel.h"
+#include "Adafruit_NeoPixel\Adafruit_NeoPixel.h"
+#include "Adafruit_NeoPixel\Adafruit_NeoPixel.cpp"
 
-#define PIN 2
+#define PIN 8
 #define NUMPIXELS 31
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 uint16_t hh = 0;
@@ -9,8 +10,8 @@ const String hexDigits = "0123456789ABCDEF";
 void setup(){
     pixels.begin();
     pixels.setBrightness(255);
-    Serial.begin(250000);
-    pinMode(13, OUTPUT);
+    Serial.begin(230400);
+    Serial.setTimeout()
 }
 bool flag = 0;
 String data;
@@ -25,15 +26,18 @@ void loop(){
     delay(10);
     hh += 350;
     */
+    char ddata[220];
     if(Serial.available()){
         data = Serial.readStringUntil('M'); ///Serial.readString()
-        if(data == "get device name"){
-            Serial.print("ws2812-1");
-            pinMode(13, HIGH);
+        /*
+        int iio = 0;
+        while(Serial.available()){
+            ddata[iio] = Serial.read();
+            iio++;
         }
-        else{
-            flag = 1;
-        }
+        data = ddata;
+        */
+        flag = 1;
     }
     if(flag){
         //Serial.println(data);
@@ -55,8 +59,6 @@ void loop(){
             pixels.setPixelColor(i, pixels.Color(red, green, blue));
 
         }
-        digitalWrite(13, color_str[0] == "FFFFFF");
-        Serial.println(color_str[0]);
         flag = 0;
         pixels.show();
     }

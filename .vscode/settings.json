@@ -1,0 +1,19 @@
+{
+    "cmake.configureOnOpen": true,
+    "cmake.statusbar.advanced": {
+        "debug" : {
+          "visibility": "default"
+                  },
+        "launch" : {
+          "visibility": "default"
+                   },
+        "build" : {
+          "visibility": "default"
+                   },
+        "buildTarget" : {
+          "visibility": "default"
+                   },
+    },
+    "C_Cpp.errorSquiggles": "disabled",
+    "cmake.sourceDirectory": "C:/Users/bcps1/Desktop/project/asia_maker_gym_2023/main_host/CMakeLists.txt"
+}
