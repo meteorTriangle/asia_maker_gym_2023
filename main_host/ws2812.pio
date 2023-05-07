@@ -1,0 +1,20 @@
+.program ws2812
+  ;25MHz 0.4us = 10cycle
+
+.wrap_target
+loop:
+    jmp !osre start
+    jmp loop ;
+start:
+    pull
+    set y, 23
+    out NULL, 8
+single_24_loop:
+    set pins, 1 [9]
+    mov pins, ~osr [9]
+    set pins, 0 [7]
+    out NULL, 1
+    jmp y-- single_24_loop
+    set x, 0
+    jmp loop
+.wrap

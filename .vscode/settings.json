@@ -14,6 +14,6 @@
           "visibility": "default"
                    },
     },
-    "C_Cpp.errorSquiggles": "disabled",
-    "cmake.sourceDirectory": "C:/Users/bcps1/Desktop/project/asia_maker_gym_2023/main_host/CMakeLists.txt"
+    "C_Cpp.errorSquiggles": "enabled",
+    "cmake.sourceDirectory": "M:/asia_maker_gym_2023/main_host/CMakeLists.txt",
 }

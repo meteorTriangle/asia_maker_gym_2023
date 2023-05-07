@@ -110,7 +110,9 @@ void loop(){
 
 void I2C_receieve(int bytes_Q){
     uint8_t I2C_read[bytes_Q];
-    Wire.readBytes(I2C_read, bytes_Q);
+    for(int w=0; w<bytes_Q; w++){
+        I2C_read[w] = Wire.read(); 
+    }
     if(I2C_read[0] == 8){  //[8] [<Servo_Horizon_H>] [<Servo_Horizon_L>] [<Servo_Vertical_H>] [<Servo_Vertical_L>]
         int Servo_Horizon_H = I2C_read[1];
         int Servo_Horizon_L = I2C_read[2];

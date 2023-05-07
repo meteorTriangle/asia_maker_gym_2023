@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Initialise pico_sdk from installed location
 # (note this can come from environment, CMake cache etc)
-set(PICO_SDK_PATH "C:/rp2040/pico-sdk")
+set(PICO_SDK_PATH "${PICO_SDK_PATH}")
 
 set(PICO_BOARD pico CACHE STRING "Board type")
 
@@ -27,11 +27,13 @@ pico_sdk_init()
 
 add_executable(main_host main_host.cpp )
 
+#pico_generate_pio_header(main_host ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
+
 pico_set_program_name(main_host "main_host")
 pico_set_program_version(main_host "0.1")
 
-pico_enable_stdio_uart(main_host 1)
-pico_enable_stdio_usb(main_host 0)
+pico_enable_stdio_uart(main_host 0)
+pico_enable_stdio_usb(main_host 1)
 
 # Add the standard library to the build
 target_link_libraries(main_host
@@ -45,11 +47,11 @@ target_include_directories(main_host PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(main_host 
+        hardware_gpio
         hardware_i2c
-        hardware_pio
+        #hardware_pio
         hardware_timer
-        hardware_clocks
+        #hardware_clocks
         )
 
 pico_add_extra_outputs(main_host)
-
