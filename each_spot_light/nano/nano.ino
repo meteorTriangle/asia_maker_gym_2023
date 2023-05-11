@@ -50,6 +50,7 @@ void setup(){
     pinMode(pin_greenLed, OUTPUT);
     pinMode(pin_blueLed, OUTPUT);
     Wire.onReceive(I2C_receieve);
+    servo__set(1500, 1500);
 }
 bool Serial_flag = 0;
 String Serial_data = "";
