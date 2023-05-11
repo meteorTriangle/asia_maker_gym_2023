@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 import time
 import os
 
-self_path = os.path.dirname(__file__) + "\\"
+self_path = ""  #os.path.dirname(__file__) + "\\"
 com_list_description = ['']
 com_list_name = []
 run = 0
