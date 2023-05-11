@@ -11,7 +11,9 @@ from tkinter import scrolledtext
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import time
+import os
 
+self_path = os.path.dirname(__file__) + "\\"
 com_list_description = ['']
 com_list_name = []
 run = 0
@@ -138,7 +140,9 @@ root = tk.Tk()
 root.title("投射燈調整程式")
 root.resizable(False, False)
 root.geometry('600x600')
-root.iconbitmap("Python\logo.ico")
+root.iconbitmap(self_path + "Python\\logo.ico")
+
+
 
 Top_frame = tk.Frame(root, bd=2, relief="raise")
 Top_frame.pack(side = "top", fill="x")
