@@ -6,3 +6,4 @@
 *.stl
 *.pyc
 *build/
+/*.exe
