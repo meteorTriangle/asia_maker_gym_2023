@@ -21,19 +21,19 @@ const uint8_t addr_1_on[] = {0x09, 0x00, 0x00, 0x00};
 /// @param status 
 void check_connection(bool *status){
     for(int addr_=0; addr_<12; addr_++){
-        int error = i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
-        *status++ = error > 0;
+        int error = i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
+        *(status+addr_) = error > 0;
     }
     sleep_ms(1000);
     for(int addr_=0; addr_<12; addr_++){
-        if(status[addr_]){
-            i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_on[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
+        if(*(status+addr_)){
+            i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_on[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
         }
     }
     sleep_ms(1000);
     for(int addr_=0; addr_<12; addr_++){
-        if(status[addr_]){
-            i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
+        if(*(status+addr_)){
+            i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
             sleep_ms(500);
         }
     }
@@ -51,7 +51,7 @@ int main()
     stdio_init_all();
     
     // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT, 100*1000);
+    i2c_init(I2C_PORT, 400*1000);
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA);
@@ -74,8 +74,8 @@ int main()
 
 
     while(true){
-        for(int addr_=0; addr_<12; addr_++){
-            if(spotlight_status[addr_]){
+        for(int addr_=1; addr_<13; addr_++){
+            if(spotlight_status[addr_ - 1]){
                 i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_on[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
                 sleep_ms(500);
                 i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);

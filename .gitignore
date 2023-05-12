@@ -7,3 +7,5 @@
 *.pyc
 *build/
 /*.exe
+*.exe
+*.zip

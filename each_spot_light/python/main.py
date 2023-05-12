@@ -78,7 +78,7 @@ def disconnect():
 def address_set():
     try:
         I2C_address = int(address_text.get())
-        if(I2C_address >= 12  or  I2C_address < 0):
+        if(I2C_address > 12  or  I2C_address <= 0):
             messagebox.showerror("數值錯誤", "位址必須為1~12")
         else:
             write_string = "02 " + "{:0>2d}".format(I2C_address) + "M"
