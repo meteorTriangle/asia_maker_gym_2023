@@ -52,9 +52,9 @@ int64_t alarm_callback(alarm_id_t id, void *user_data) {
 int main()
 {
     stdio_init_all();
-    int ref_time = time_us_64();
+    uint64_t ref_time = time_us_64();
     // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT, 100*1000);
+    i2c_init(I2C_PORT, 400*1000);
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA);
@@ -87,12 +87,56 @@ int main()
     }
     */
 
-
+    uint8_t receieve_data[100];
+    bool last_receieve_status = false;
+    bool receieve_status = false;
+    bool flag = false;
     while(true){
-        int dd = getchar_timeout_us(30);
-        if(dd != -1){
-            char cc = dd;
-            printf("%c", cc);
+        int receieve_ = getchar_timeout_us(1);
+        receieve_status = receieve_ != -1;
+        if(receieve_status && (!last_receieve_status)){
+            receieve_data[0] = 0;
+        }
+        if(receieve_status){
+            receieve_data[0]++;
+            receieve_data[receieve_data[0]] = receieve_;
+        }
+        if(!receieve_status && last_receieve_status){
+            flag = true;
+        }
+        last_receieve_status = receieve_status;
+
+        if(flag){
+            ref_time = time_us_64();
+            for(uint8_t i = 1; i <= receieve_data[0]; i++){
+                printf("%d-", receieve_data[i]);
+            }
+            printf("\n");
+            flag = false;
+            if(receieve_data[1] == 0x01){      //0x01 <addr> <red> <green> <blue>         set spotlight color
+                uint8_t transData[4] = {0x09, receieve_data[3], receieve_data[4], receieve_data[5]};
+                uint8_t addr = receieve_data[2];
+                if(spotlight_status[addr - 1]){
+                    i2c_write_timeout_us(I2C_PORT, addr, &transData[0], sizeof(transData)/sizeof(transData[0]), false, 400);
+                    printf("set\n");
+                }
+            }
+            if(receieve_data[1] == 0x02){         // status
+                printf("status: ");
+                for(int ii=0; ii<12; ii++){
+                    printf("%s  ", spotlight_status[ii] ? "0" : "*");
+                }
+                printf("\n");
+            }
+            if(receieve_data[1] == 0x03){         //0x03 <addr> <servoHor_H> <servoHor_L> <servoVer_H> <servoVer_L>
+                uint8_t transData[5] = {0x08, receieve_data[3], receieve_data[4], receieve_data[5], receieve_data[6]};
+                uint8_t addr = receieve_data[2];
+                if(spotlight_status[addr - 1]){
+                    i2c_write_timeout_us(I2C_PORT, addr, &transData[0], sizeof(transData)/sizeof(transData[0]), false, 400);
+                    printf("set\n");
+                }
+            }
+            printf("%lu\n", (long)(time_us_64()-ref_time));
         }
         /*
         for(uint16_t servo_v_=2300; servo_v_>600; servo_v_-=20){
