@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
@@ -46,17 +47,19 @@ int64_t alarm_callback(alarm_id_t id, void *user_data) {
     return 0;
 }
 */
+
+
 int main()
 {
     stdio_init_all();
-    
+    int ref_time = time_us_64();
     // I2C Initialisation. Using it at 400Khz.
     i2c_init(I2C_PORT, 100*1000);
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA);
     gpio_pull_up(I2C_SCL);
-    //sleep_ms(3000);
+    sleep_ms(3000);
     
     //check connection status
     bool spotlight_status[12];
@@ -71,9 +74,67 @@ int main()
     //add_alarm_in_ms(2000, alarm_callback, NULL, false);
     gpio_init(25);
     gpio_set_dir(25, true);
+    //stdio_set_chars_available_callback();
+    /*
+    for(uint16_t servo_v_=1500; servo_v_<2300; servo_v_+=20){
+        uint8_t servo_act[5] = {0x08, uint8_t(servo_v_>>8), (uint8_t)servo_v_, uint8_t(servo_v_>>8), (uint8_t)servo_v_};
+        for(int addr_=1; addr_<13; addr_++){
+            if(spotlight_status[addr_ - 1]){
+                i2c_write_timeout_us(I2C_PORT, addr_, &servo_act[0], sizeof(servo_act)/sizeof(servo_act[0]), false, 1000);
+            }
+        }
+        sleep_ms(10);
+    }
+    */
 
 
     while(true){
+        int dd = getchar_timeout_us(30);
+        if(dd != -1){
+            char cc = dd;
+            printf("%c", cc);
+        }
+        /*
+        for(uint16_t servo_v_=2300; servo_v_>600; servo_v_-=20){
+            uint8_t servo_act[5] = {0x08, uint8_t(servo_v_>>8), (uint8_t)servo_v_, uint8_t(servo_v_>>8), (uint8_t)servo_v_};
+            for(int addr_=1; addr_<13; addr_++){
+                if(spotlight_status[addr_ - 1]){
+                    i2c_write_timeout_us(I2C_PORT, addr_, &servo_act[0], sizeof(servo_act)/sizeof(servo_act[0]), false, 1000);
+                }
+            }
+            if(time_us_64() - ref_time > 2000*1000){
+                for(int addr_=1; addr_<13; addr_++){
+                    if(spotlight_status[addr_ - 1]){
+                        uint8_t LED__[] = {0x09, (uint8_t)(rand()%256), (uint8_t)(rand()%256), (uint8_t)(rand()%256)}; 
+                        i2c_write_timeout_us(I2C_PORT, addr_, &LED__[0], sizeof(LED__)/sizeof(LED__[0]), false, 1000);
+                    }
+                }
+                ref_time = time_us_64();
+            }
+            sleep_ms(10);
+        }
+        
+        for(uint16_t servo_v_=600; servo_v_<2300; servo_v_+=20){
+            uint8_t servo_act[5] = {0x08, uint8_t(servo_v_>>8), (uint8_t)servo_v_, uint8_t(servo_v_>>8), (uint8_t)servo_v_};
+            for(int addr_=1; addr_<13; addr_++){
+                if(spotlight_status[addr_ - 1]){
+                    i2c_write_timeout_us(I2C_PORT, addr_, &servo_act[0], sizeof(servo_act)/sizeof(servo_act[0]), false, 1000);
+                    
+                }
+            }
+            if(time_us_64() - ref_time > 2000*1000){
+                for(int addr_=1; addr_<13; addr_++){
+                    if(spotlight_status[addr_ - 1]){
+                        uint8_t LED__[] = {0x09, (uint8_t)(rand()%256), (uint8_t)(rand()%256), (uint8_t)(rand()%256)}; 
+                        i2c_write_timeout_us(I2C_PORT, addr_, &LED__[0], sizeof(LED__)/sizeof(LED__[0]), false, 1000);
+                    }
+                }
+                ref_time = time_us_64();
+            }
+            sleep_ms(10);
+        }
+        */
+        /*
         for(int addr_=1; addr_<13; addr_++){
             if(spotlight_status[addr_ - 1]){
                 i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_off[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
@@ -81,7 +142,7 @@ int main()
                 i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_on[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
                 sleep_ms(80);
             }
-        }
+        }*/
     }
 
 
