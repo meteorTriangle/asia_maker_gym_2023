@@ -15,26 +15,26 @@
 #define I2C_SDA 14
 #define I2C_SCL 15
 
-const uint8_t addr_1_off[] = {0x09, 0xFF, 0xFF, 0xFF};
-const uint8_t addr_1_on[] = {0x09, 0x00, 0x00, 0x00};
+const uint8_t addr_1_on[] = {0x09, 0xFF, 0xFF, 0xFF};
+const uint8_t addr_1_off[] = {0x09, 0x00, 0x00, 0x00};
 
 /// @brief check every spotlight nano is connected
 /// @param status 
 void check_connection(bool *status){
     for(int addr_=0; addr_<12; addr_++){
-        int error = i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
+        int error = i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_on[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
         *(status+addr_) = error > 0;
     }
     sleep_ms(1000);
     for(int addr_=0; addr_<12; addr_++){
         if(*(status+addr_)){
-            i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_on[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
+            i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_off[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
         }
     }
     sleep_ms(1000);
     for(int addr_=0; addr_<12; addr_++){
         if(*(status+addr_)){
-            i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_off[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
+            i2c_write_timeout_us(I2C_PORT, addr_+1, &addr_1_on[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
             sleep_ms(500);
         }
     }
@@ -122,11 +122,9 @@ int main()
                 }
             }
             if(receieve_data[1] == 0x02){         // status
-                printf("status: ");
                 for(int ii=0; ii<12; ii++){
                     printf("%s  ", spotlight_status[ii] ? "0" : "*");
                 }
-                printf("\n");
             }
             if(receieve_data[1] == 0x03){         //0x03 <addr> <servoHor_H> <servoHor_L> <servoVer_H> <servoVer_L>
                 uint8_t transData[5] = {0x08, receieve_data[3], receieve_data[4], receieve_data[5], receieve_data[6]};
@@ -136,7 +134,23 @@ int main()
                     printf("set\n");
                 }
             }
-            printf("%lu\n", (long)(time_us_64()-ref_time));
+            if(receieve_data[1] == 0x04){        //0x04 <servo1_H_h> <servo1_H_l> <servo1_V_h> <servo1_V_l> <servo2_H_h> <servo2_H_l> <servo2_V_h> <servo2_V_l>.............
+                for(int i = 0; i< 9; i++){
+                    uint8_t transData[5] = {0x08, receieve_data[2+(4*i)], receieve_data[3+(4*i)], receieve_data[4+(4*i)], receieve_data[5+(4*i)]};
+                    if(spotlight_status[i]){
+                        i2c_write_timeout_us(I2C_PORT, i+1, &transData[0], sizeof(transData)/sizeof(transData[0]), false, 400);
+                    }
+                }
+            }
+            if(receieve_data[1] == 0x05){        //0x05 <r1> <g1> <b1> <r2> <g2> <b2>
+                for(int i = 0; i< 9; i++){
+                    uint8_t transData[5] = {0x09, receieve_data[2+(3*i)], receieve_data[3+(3*i)], receieve_data[4+(3*i)]};
+                    if(spotlight_status[i]){
+                        i2c_write_timeout_us(I2C_PORT, i+1, &transData[0], sizeof(transData)/sizeof(transData[0]), false, 400);
+                    }
+                }
+            }
+            //printf("%lu\n", (long)(time_us_64()-ref_time));
         }
         /*
         for(uint16_t servo_v_=2300; servo_v_>600; servo_v_-=20){

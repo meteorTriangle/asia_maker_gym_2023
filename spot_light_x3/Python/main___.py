@@ -11,26 +11,29 @@ from tkinter import scrolledtext
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import time
-import ctypes
-import sys
+import os
 
 ### import threading as th
 ### import queue
 #### sub
 import serial__.ser as sser
-
+##self_path = os.path.dirname(__file__) + "\\"
+self_path = ""
 servo_change = False
 
 run = 1
+LED_change = False
 
 ###pyserial
-BAUD_RATES = 1000000
+BAUD_RATES = 10000000
 
-single_servo_frame = list(range(12))
-horizon_servo_gui = list(range(12))
-vertical_servo_gui = list(range(12))
-vertical_servo = list(range(12))
-horizon_servo = list(range(12))
+single_servo_frame = list(range(9))
+horizon_servo_gui = list(range(9))
+vertical_servo_gui = list(range(9))
+vertical_servo = list(range(9))
+horizon_servo = list(range(9))
+LED_frame = list(range(9))
+LED_butt = list(range(9))
 
 vertical_servo_id = id(vertical_servo)
 horizon_servo_id = id(horizon_servo)
@@ -46,7 +49,7 @@ root = tk.Tk()
 root.title(file_path)
 root.resizable(False, False)
 root.geometry('1580x950')
-root.iconbitmap("Python\logo.ico")
+root.iconbitmap(self_path + "Python\\logo.ico")
 
 sj = sser.serial_json(BAUD_RATES)
 
@@ -134,23 +137,40 @@ def loop_():
                     vertical_servo_gui[j].set(servo_data[j][1])
     global servo_change
     if(com_connect['text'] == "斷線" and servo_change):
-        trans_data = ''
+        trans_data = '04'
         transdata_time_ = sj.get_R_time()
-        for j in range(12):
-            trans_data = trans_data + "{:0>4d}".format(int(horizon_servo_gui[j].get()*2000/180 +500)) + " "
-            trans_data = trans_data + "{:0>4d}".format(int(vertical_servo_gui[j].get()*2000/180 +500)) + " "
-        trans_data = 'm' + trans_data[0:119]+'M'
         
-        error_state = sj.transport(trans_data.encode('UTF-8'))
+        for j in range(9):
+            trans_data = trans_data + "{:0>4X}".format(int(horizon_servo_gui[j].get()*2000/180 + 500))
+            trans_data = trans_data + "{:0>4X}".format(int(vertical_servo_gui[j].get()*2000/180 +500))
+        
+        
+        error_state = sj.transport(bytes.fromhex(trans_data))
+        ###error_state = sj.transport(bytes.fromhex("0102000000"))
         transdata_time = int(sj.get_R_time() - transdata_time_)
         delay_display["text"] = str(transdata_time)
-        print(trans_data)
+        print(bytes.fromhex(trans_data))
+        print((trans_data))
         if error_state is True:
             messagebox.showinfo("斷線", sj.error)
             com_connect['text'] = "連線"
             sj.disconnect()
         servo_change = False
-    
+    time.sleep(0.01)
+    if(com_connect['text'] == "斷線"):
+        trans_data = '05'
+        for j in range(9):
+            tk.Button()
+            trans_data = trans_data + ("FF","00")[LED_butt[j]["red"]["bg"] == "#FFFFFF"]
+            trans_data = trans_data + ("FF","00")[LED_butt[j]["green"]["bg"] == "#FFFFFF"]
+            trans_data = trans_data + ("FF","00")[LED_butt[j]["blue"]["bg"] == "#FFFFFF"]
+        error_state = sj.transport(bytes.fromhex(trans_data))
+        print(bytes.fromhex(trans_data))
+        print((trans_data))
+        if error_state is True:
+            messagebox.showinfo("斷線", sj.error)
+            com_connect['text'] = "連線"
+            sj.disconnect()
     root.after(30, loop_)
 
 def play_C():
@@ -194,7 +214,7 @@ def chaange(num):
     global servo_change
     servo_change = True
 
-img = Image.open("Python\LOGO.png")
+img = Image.open(self_path + "Python\\LOGO.png")
 img = img.resize((96, 38))
 tk_img = ImageTk.PhotoImage(img)
 
@@ -233,13 +253,15 @@ delay_display.pack(side="left")
 Lfont = tkf.Font(size=30)
 
 #### scale block
-setting_frame = tk.Frame(root, width=1280, height=400)                  ### servo frame
+setting_frame = tk.Frame(root, width=1280, height=470)                  ### servo frame
 setting_frame.pack(side="top")
 
 
-for i in range(12):
+for i in range(9):
     single_servo_frame[i] = tk.Frame(setting_frame, bd=5, relief='groove')
     single_servo_frame[i].grid(column=i, row=0)
+    LED_frame[i] = tk.Frame(single_servo_frame[i])
+    LED_frame[i].pack(side='bottom')
     tittle = tk.Label(single_servo_frame[i], text='Light'+str(i+1), font=Lfont)
     tittle.pack()
     vertical_servo[i] = tk.DoubleVar()
@@ -248,6 +270,17 @@ for i in range(12):
     vertical_servo_gui[i].pack(side="left")
     horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=horizon_servo[i], orient='vertical', from_=0, to=180, width=15, resolution=0.1, command=chaange)
     horizon_servo_gui[i].pack(side="left")
+    c = i
+    LED_butt[i] = {
+        "red": tk.Button(LED_frame[i], height=1, width=1, background="#FF0000", activebackground="#FFFFFF", command=lambda n=i: LED_butt[n]["red"].config(bg=(("#FF0000", "#FFFFFF")[LED_butt[n]["red"]["bg"]=="#FF0000"]))),
+        "green": tk.Button(LED_frame[i], height=1, width=1, background="#00FF00", activebackground="#FFFFFF", command=lambda n=i: LED_butt[n]["green"].config(bg=(("#00FF00", "#FFFFFF")[LED_butt[n]["green"]["bg"]=="#00FF00"]))),
+        "blue": tk.Button(LED_frame[i], height=1, width=1, background="#0000FF", activebackground="#FFFFFF", command=lambda n=i: LED_butt[n]["blue"].config(bg=(("#0000FF", "#FFFFFF")[LED_butt[n]["blue"]["bg"]=="#0000FF"])))
+    }
+    LED_butt[i]["red"].grid(column=0, row=0)
+    LED_butt[i]["green"].grid(column=1, row=0)
+    LED_butt[i]["blue"].grid(column=2, row=0)
+
+    
 
 but_frame = tk.Frame(root)
 but_frame.pack(fill="both")
@@ -255,23 +288,23 @@ but_frame.pack(fill="both")
 play_frame = tk.Frame(but_frame, bd=2, relief='groove')
 play_frame.pack(side="top", fill="x")
 ### load icon
-play_img = Image.open("Python\icon\play-button-arrowhead.png")
+play_img = Image.open(self_path + "Python\\icon\\play-button-arrowhead.png")
 play_img = play_img.resize((30, 30))
 play_tk_img = ImageTk.PhotoImage(play_img)
 
-pause_img = Image.open("Python\icon\pause.png")
+pause_img = Image.open(self_path + "Python\\icon\\pause.png")
 pause_img = pause_img.resize((30, 30))
 pause_tk_img = ImageTk.PhotoImage(pause_img)
 
-stop_img = Image.open("Python\icon\stop-button.png")
+stop_img = Image.open(self_path + "Python\\icon\\stop-button.png")
 stop_img = stop_img.resize((30, 30))
 stop_tk_img = ImageTk.PhotoImage(stop_img)
 
-fast_img = Image.open("Python\icon\\fast-forward.png")
+fast_img = Image.open(self_path + "Python\\icon\\fast-forward.png")
 fast_img = fast_img.resize((30, 30))
 fast_tk_img = ImageTk.PhotoImage(fast_img)
 
-back_img = Image.open("Python\icon\\rewind-button.png")
+back_img = Image.open(self_path + "Python\\icon\\rewind-button.png")
 back_img = back_img.resize((30, 30))
 back_tk_img = ImageTk.PhotoImage(back_img)
 

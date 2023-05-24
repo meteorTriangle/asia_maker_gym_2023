@@ -43,6 +43,7 @@ class serial_json:
     def transport(self, data):
         print(self.ser.is_open)
         ##self.ser.reset_output_buffer()
+        self.ser.reset_input_buffer()
         try:
             self.ser.write(data)
             return False
