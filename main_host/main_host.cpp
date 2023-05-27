@@ -4,6 +4,7 @@
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 #include "hardware/timer.h"
+#include "hardware/pwm.h"
 //#include "hardware/clocks.h"
 
 
@@ -48,9 +49,9 @@ int64_t alarm_callback(alarm_id_t id, void *user_data) {
 }
 */
 
-
 int main()
 {
+    set_sys_clock_khz(125000, true);
     stdio_init_all();
     uint64_t ref_time = time_us_64();
     // I2C Initialisation. Using it at 400Khz.
@@ -59,33 +60,24 @@ int main()
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA);
     gpio_pull_up(I2C_SCL);
+    //servo pwm initial
+    gpio_set_function(0, GPIO_FUNC_PWM);
+    pwm_config servo_pwm_config =  pwm_get_default_config();
+    pwm_config_set_clkdiv_int(&servo_pwm_config, 250);
+    pwm_config_set_wrap(&servo_pwm_config, 10000);
+    uint slice_num = pwm_gpio_to_slice_num(0);
+    pwm_init(slice_num, &servo_pwm_config, false);
+    pwm_set_enabled(slice_num, true); 
+    pwm_set_chan_level(slice_num, PWM_CHAN_A, 5000);
+
     sleep_ms(3000);
     
     //check connection status
     bool spotlight_status[12];
-    check_connection(&spotlight_status[0]);
-    printf("status: ");
-    for(int ii=0; ii<12; ii++){
-        printf("%s  ", spotlight_status[ii] ? "0" : "*");
-    }
-    printf("\n");
+    check_connection(&spotlight_status[0]); 
 
-    // Timer example code - This example fires off the callback after 2000ms
-    //add_alarm_in_ms(2000, alarm_callback, NULL, false);
     gpio_init(25);
     gpio_set_dir(25, true);
-    //stdio_set_chars_available_callback();
-    /*
-    for(uint16_t servo_v_=1500; servo_v_<2300; servo_v_+=20){
-        uint8_t servo_act[5] = {0x08, uint8_t(servo_v_>>8), (uint8_t)servo_v_, uint8_t(servo_v_>>8), (uint8_t)servo_v_};
-        for(int addr_=1; addr_<13; addr_++){
-            if(spotlight_status[addr_ - 1]){
-                i2c_write_timeout_us(I2C_PORT, addr_, &servo_act[0], sizeof(servo_act)/sizeof(servo_act[0]), false, 1000);
-            }
-        }
-        sleep_ms(10);
-    }
-    */
 
     uint8_t receieve_data[100];
     bool last_receieve_status = false;
@@ -150,60 +142,14 @@ int main()
                     }
                 }
             }
-            //printf("%lu\n", (long)(time_us_64()-ref_time));
+            if(receieve_data[1] == 0x06){          // 0x06 <servo_H_bit> <servo_L_bit> elevator
+                int elevator_servo_us = (int(receieve_data[2])<<8) | int(receieve_data[3]);
+                printf("%d", elevator_servo_us);
+                pwm_set_chan_level(slice_num, PWM_CHAN_A, elevator_servo_us/2);
+            }
         }
-        /*
-        for(uint16_t servo_v_=2300; servo_v_>600; servo_v_-=20){
-            uint8_t servo_act[5] = {0x08, uint8_t(servo_v_>>8), (uint8_t)servo_v_, uint8_t(servo_v_>>8), (uint8_t)servo_v_};
-            for(int addr_=1; addr_<13; addr_++){
-                if(spotlight_status[addr_ - 1]){
-                    i2c_write_timeout_us(I2C_PORT, addr_, &servo_act[0], sizeof(servo_act)/sizeof(servo_act[0]), false, 1000);
-                }
-            }
-            if(time_us_64() - ref_time > 2000*1000){
-                for(int addr_=1; addr_<13; addr_++){
-                    if(spotlight_status[addr_ - 1]){
-                        uint8_t LED__[] = {0x09, (uint8_t)(rand()%256), (uint8_t)(rand()%256), (uint8_t)(rand()%256)}; 
-                        i2c_write_timeout_us(I2C_PORT, addr_, &LED__[0], sizeof(LED__)/sizeof(LED__[0]), false, 1000);
-                    }
-                }
-                ref_time = time_us_64();
-            }
-            sleep_ms(10);
-        }
-        
-        for(uint16_t servo_v_=600; servo_v_<2300; servo_v_+=20){
-            uint8_t servo_act[5] = {0x08, uint8_t(servo_v_>>8), (uint8_t)servo_v_, uint8_t(servo_v_>>8), (uint8_t)servo_v_};
-            for(int addr_=1; addr_<13; addr_++){
-                if(spotlight_status[addr_ - 1]){
-                    i2c_write_timeout_us(I2C_PORT, addr_, &servo_act[0], sizeof(servo_act)/sizeof(servo_act[0]), false, 1000);
-                    
-                }
-            }
-            if(time_us_64() - ref_time > 2000*1000){
-                for(int addr_=1; addr_<13; addr_++){
-                    if(spotlight_status[addr_ - 1]){
-                        uint8_t LED__[] = {0x09, (uint8_t)(rand()%256), (uint8_t)(rand()%256), (uint8_t)(rand()%256)}; 
-                        i2c_write_timeout_us(I2C_PORT, addr_, &LED__[0], sizeof(LED__)/sizeof(LED__[0]), false, 1000);
-                    }
-                }
-                ref_time = time_us_64();
-            }
-            sleep_ms(10);
-        }
-        */
-        /*
-        for(int addr_=1; addr_<13; addr_++){
-            if(spotlight_status[addr_ - 1]){
-                i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_off[0], sizeof(addr_1_on)/sizeof(addr_1_on[0]), false, 1000);
-                sleep_ms(80);
-                i2c_write_timeout_us(I2C_PORT, addr_, &addr_1_on[0], sizeof(addr_1_off)/sizeof(addr_1_off[0]), false, 1000);
-                sleep_ms(80);
-            }
-        }*/
     }
 
 
     return 0;
 }
-

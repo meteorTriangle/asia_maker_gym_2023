@@ -17,10 +17,10 @@ import os
 ### import queue
 #### sub
 import serial__.ser as sser
-##self_path = os.path.dirname(__file__) + "\\"
-self_path = ""
+self_path = os.path.dirname(__file__) + "\\"
+##self_path = ""
 servo_change = False
-
+elevator_in_change = False
 run = 1
 LED_change = False
 
@@ -165,8 +165,17 @@ def loop_():
             trans_data = trans_data + ("FF","00")[LED_butt[j]["green"]["bg"] == "#FFFFFF"]
             trans_data = trans_data + ("FF","00")[LED_butt[j]["blue"]["bg"] == "#FFFFFF"]
         error_state = sj.transport(bytes.fromhex(trans_data))
-        print(bytes.fromhex(trans_data))
-        print((trans_data))
+        ##print(bytes.fromhex(trans_data))
+        ##print((trans_data))
+        if error_state is True:
+            messagebox.showinfo("斷線", sj.error)
+            com_connect['text'] = "連線"
+            sj.disconnect()
+    time.sleep(0.01)
+    if(com_connect['text'] == "斷線" and elevator_in_change):
+        trans_data = '06'
+        trans_data = trans_data + "{:0>4X}".format(int(elevator_servo_gui.get()*2000/180 + 500))
+        error_state = sj.transport(bytes.fromhex(trans_data))
         if error_state is True:
             messagebox.showinfo("斷線", sj.error)
             com_connect['text'] = "連線"
@@ -213,6 +222,9 @@ def backT_C():
 def chaange(num):
     global servo_change
     servo_change = True
+def elevator_change(num):
+    global elevator_in_change
+    elevator_in_change = True
 
 img = Image.open(self_path + "Python\\LOGO.png")
 img = img.resize((96, 38))
@@ -266,20 +278,48 @@ for i in range(9):
     tittle.pack()
     vertical_servo[i] = tk.DoubleVar()
     horizon_servo[i] = tk.DoubleVar()
-    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=vertical_servo[i], orient='vertical', from_=0, to=180, width=15, resolution=0.1, command=chaange)
+    vertical_servo_gui[i] = tk.Scale(single_servo_frame[i], 
+                                     length=370, 
+                                     variable=vertical_servo[i], 
+                                     orient='vertical', 
+                                     from_=0, to=180, 
+                                     width=15, 
+                                     resolution=0.1, 
+                                     command=chaange)
     vertical_servo_gui[i].pack(side="left")
     horizon_servo_gui[i] = tk.Scale(single_servo_frame[i], length=370, variable=horizon_servo[i], orient='vertical', from_=0, to=180, width=15, resolution=0.1, command=chaange)
     horizon_servo_gui[i].pack(side="left")
     c = i
     LED_butt[i] = {
-        "red": tk.Button(LED_frame[i], height=1, width=1, background="#FF0000", activebackground="#FFFFFF", command=lambda n=i: LED_butt[n]["red"].config(bg=(("#FF0000", "#FFFFFF")[LED_butt[n]["red"]["bg"]=="#FF0000"]))),
-        "green": tk.Button(LED_frame[i], height=1, width=1, background="#00FF00", activebackground="#FFFFFF", command=lambda n=i: LED_butt[n]["green"].config(bg=(("#00FF00", "#FFFFFF")[LED_butt[n]["green"]["bg"]=="#00FF00"]))),
-        "blue": tk.Button(LED_frame[i], height=1, width=1, background="#0000FF", activebackground="#FFFFFF", command=lambda n=i: LED_butt[n]["blue"].config(bg=(("#0000FF", "#FFFFFF")[LED_butt[n]["blue"]["bg"]=="#0000FF"])))
+        "red": tk.Button(LED_frame[i], 
+                         height=1, 
+                         width=1, 
+                         background="#FF0000", 
+                         activebackground="#FFFFFF", 
+                         command=lambda n=i: LED_butt[n]["red"].config(bg=(("#FF0000", "#FFFFFF")[LED_butt[n]["red"]["bg"]=="#FF0000"]))),
+        "green": tk.Button(LED_frame[i], 
+                           height=1, 
+                           width=1, 
+                           background="#00FF00", 
+                           activebackground="#FFFFFF", 
+                           command=lambda n=i: LED_butt[n]["green"].config(bg=(("#00FF00", "#FFFFFF")[LED_butt[n]["green"]["bg"]=="#00FF00"]))),
+        "blue": tk.Button(LED_frame[i], 
+                          height=1, 
+                          width=1, 
+                          background="#0000FF", 
+                          activebackground="#FFFFFF", 
+                          command=lambda n=i: LED_butt[n]["blue"].config(bg=(("#0000FF", "#FFFFFF")[LED_butt[n]["blue"]["bg"]=="#0000FF"])))
     }
     LED_butt[i]["red"].grid(column=0, row=0)
     LED_butt[i]["green"].grid(column=1, row=0)
     LED_butt[i]["blue"].grid(column=2, row=0)
-
+elevator_frame = tk.Frame(setting_frame, bd=5, relief="groove", height=500)
+elevator_frame.grid(column=10, row=0)
+tittle = tk.Label(elevator_frame, text='Elevator', font=Lfont)
+tittle.pack()
+elevator_servo_var = tk.DoubleVar()
+elevator_servo_gui = tk.Scale(elevator_frame, length=370, variable=elevator_servo_var, orient='vertical', from_=0, to=180, width=15, resolution=0.1, command=elevator_change)
+elevator_servo_gui.pack(side="left")
     
 
 but_frame = tk.Frame(root)

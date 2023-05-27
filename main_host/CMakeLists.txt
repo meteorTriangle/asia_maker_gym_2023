@@ -25,7 +25,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(main_host main_host.cpp )
+add_executable(main_host main_host.cpp)
 
 #pico_generate_pio_header(main_host ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
 
@@ -51,6 +51,7 @@ target_link_libraries(main_host
         hardware_i2c
         #hardware_pio
         hardware_timer
+        hardware_pwm
         #hardware_clocks
         )
 
