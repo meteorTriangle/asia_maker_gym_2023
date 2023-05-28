@@ -132,7 +132,7 @@ def loop_():
             if type(servo_data) is str:
                 messagebox.showinfo("錯誤", servo_data)
             else:
-                for j in range(12):
+                for j in range(9):
                     horizon_servo_gui[j].set(servo_data[j][0])
                     vertical_servo_gui[j].set(servo_data[j][1])
     global servo_change
@@ -187,9 +187,10 @@ def play_C():
         pass
     else:
         sj.file_path = file_path
+        sj.timer_reset()
+        time.sleep(0.05)
         sj.pause_state = False
         sj.timer_state = True
-        sj.timer_reset()
         play_button["bg"] = "gray"
 
 def stop_C():

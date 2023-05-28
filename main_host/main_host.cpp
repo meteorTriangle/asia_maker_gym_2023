@@ -16,7 +16,9 @@
 #define I2C_SDA 14
 #define I2C_SCL 15
 
+/// @brief LED_on command
 const uint8_t addr_1_on[] = {0x09, 0xFF, 0xFF, 0xFF};
+
 const uint8_t addr_1_off[] = {0x09, 0x00, 0x00, 0x00};
 
 /// @brief check every spotlight nano is connected

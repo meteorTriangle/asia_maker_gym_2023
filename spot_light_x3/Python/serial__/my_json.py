@@ -6,52 +6,33 @@ class convert:
         self.path = file_path
         self.str = ""
         self.json = None
-        self.name = ["light1", 
-                     "light2", 
-                     "light3",
-                     "light4", 
-                     "light5", 
-                     "light6",
-                     "light7", 
-                     "light8", 
-                     "light9",
-                     "light10", 
-                     "light11", 
-                     "light12"
-                     ]
         self.data = {
-            self.name[0]:[],
-            self.name[1]:[],
-            self.name[2]:[],
-            self.name[3]:[],
-            self.name[4]:[],
-            self.name[5]:[],
-            self.name[6]:[],
-            self.name[7]:[],
-            self.name[8]:[],
-            self.name[9]:[],
-            self.name[10]:[],
-            self.name[11]:[]
-            }
-        self.data2 = {
-            self.name[0]:{"time": [], "degree":[[],[]]},
-            self.name[1]:{"time": [], "degree":[[],[]]},
-            self.name[2]:{"time": [], "degree":[[],[]]},
-            self.name[3]:{"time": [], "degree":[[],[]]},
-            self.name[4]:{"time": [], "degree":[[],[]]},
-            self.name[5]:{"time": [], "degree":[[],[]]},
-            self.name[6]:{"time": [], "degree":[[],[]]},
-            self.name[7]:{"time": [], "degree":[[],[]]},
-            self.name[8]:{"time": [], "degree":[[],[]]},
-            self.name[9]:{"time": [], "degree":[[],[]]},
-            self.name[10]:{"time": [], "degree":[[],[]]},
-            self.name[11]:{"time": [], "degree":[[],[]]}
+            "light1":[],
+            "light2":[],
+            "light3":[],
+            "light4":[],
+            "light5":[],
+            "light6":[],
+            "light7":[],
+            "light8":[],
+            "light9":[],
+            "elevator":[]
             }
 
     def convert(self):
-        self.data2[self.name[0]]["time"] = []
-        self.data2[self.name[0]]["degree"][0] = []
-        self.data2[self.name[0]]["degree"][1] = []
+        self.data.clear()
+        self.data = {
+            "light1":[],
+            "light2":[],
+            "light3":[],
+            "light4":[],
+            "light5":[],
+            "light6":[],
+            "light7":[],
+            "light8":[],
+            "light9":[],
+            "elevator":[]
+            }
         try:
             self.str = open(self.path)
         except Exception as E:
@@ -60,26 +41,54 @@ class convert:
             self.json = json.load(self.str)
         except Exception as E:
             return "格式錯誤"
-        for j in range(12):
-            Ll1 = self.json[self.name[j]]
-            for i in range(len(Ll1)):
-                Lz2 = {"time": 0, "degree": [0, 0]}
-                time_str = Ll1[i]["time"]
+        
+        ##default 
+        for i in range(10):
+            key_name = list(self.json["default"].keys())[i]
+            self.data[key_name].append({"00:00.00": self.json["default"][key_name]})
+
+    
+        for action_data in self.json["action"]:
+            time = action_data["time"]
+            for device_name in list(action_data.keys()):
+                if device_name == "time":
+                    pass
+                else:
+                    self.data[device_name].append({time: action_data[device_name]})
+        for i in range(9):
+            single_device_data = self.data[list(self.data.keys())[i]]
+            single_device_data_con = {"servo_H": {"time": [], "deg": []}, 
+                                      "servo_V": {"time": [], "deg": []},
+                                      "LED": {"time": [], "led": []}}
+            for frame in single_device_data:
+                dataa = frame[list(frame.keys())[0]]
+                time_str = list(frame.keys())[0]
                 time_f = int(time_str[0:1])*60 + float(time_str[3:7])
-                print(time_f)
-                Lz2["time"] = time_f
-                Lz2["degree"] = Ll1[i]["degree"]
-                self.data[self.name[j]].append(Lz2)
-                self.data2[self.name[j]]["time"].append(time_f)
-                self.data2[self.name[j]]["degree"][0].append(int(Ll1[i]["degree"][0]))
-                self.data2[self.name[j]]["degree"][1].append(int(Ll1[i]["degree"][1]))
-        print(self.data2)
+                if(dataa[0] != -1):
+                    single_device_data_con["servo_H"]["time"].append(time_f)
+                    single_device_data_con["servo_H"]["deg"].append(dataa[0])
+                if(dataa[1] != -1):
+                    single_device_data_con["servo_V"]["time"].append(time_f)
+                    single_device_data_con["servo_V"]["deg"].append(dataa[1])
+                single_device_data_con["LED"]["time"].append(time_f)
+                single_device_data_con["LED"]["led"].append(dataa[2:4])
+            self.data[list(self.data.keys())[i]] = single_device_data_con
         return False
     
     def run(self, time_ms):
-        vaa = [[0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0], [0,0]]
-        for j in range(12):
-            ls1 = self.data2[self.name[j]]
-            vaa[j][0] = numpy.interp(time_ms/1000, ls1["time"], ls1["degree"][0], left=0)
-            vaa[j][1] = numpy.interp(time_ms/1000, ls1["time"], ls1["degree"][1], left=0)
+        vaa = []
+        for j in range(9):
+            ls1 = []
+            ls1.append(numpy.interp(time_ms/1000, self.data[list(self.data.keys())[j]]["servo_H"]["time"], self.data[list(self.data.keys())[j]]["servo_H"]["deg"], left=0))
+            ls1.append(numpy.interp(time_ms/1000, self.data[list(self.data.keys())[j]]["servo_V"]["time"], self.data[list(self.data.keys())[j]]["servo_V"]["deg"], left=0))
+            time_s = time_ms/1000
+            st = True
+            cti = 0
+            while st:
+                st = self.data[list(self.data.keys())[j]]["LED"]["time"][cti] <= time_s 
+                LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][cti]
+                cti+=1
+            ##ls1.append(LED_lst)
+            vaa.append(ls1)
+        print(vaa)
         return vaa
