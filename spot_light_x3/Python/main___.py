@@ -18,7 +18,7 @@ import os
 #### sub
 import serial__.ser as sser
 self_path = os.path.dirname(__file__) + "\\"
-##self_path = ""
+self_path = ""
 servo_change = False
 elevator_in_change = False
 run = 1
@@ -135,6 +135,12 @@ def loop_():
                 for j in range(9):
                     horizon_servo_gui[j].set(servo_data[j][0])
                     vertical_servo_gui[j].set(servo_data[j][1])
+                    if(servo_data[j][2][0] != -1):
+                        LED_butt[j]["red"]["bg"] = ("#FFFFFF", "#FF0000")[servo_data[j][2][0]]
+                    if(servo_data[j][2][1] != -1):
+                        LED_butt[j]["green"]["bg"] = ("#FFFFFF", "#00FF00")[servo_data[j][2][1]]
+                    if(servo_data[j][2][2] != -1):
+                        LED_butt[j]["blue"]["bg"] = ("#FFFFFF", "#0000FF")[servo_data[j][2][2]]
     global servo_change
     if(com_connect['text'] == "斷線" and servo_change):
         trans_data = '04'

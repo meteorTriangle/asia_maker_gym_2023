@@ -71,7 +71,7 @@ class convert:
                     single_device_data_con["servo_V"]["time"].append(time_f)
                     single_device_data_con["servo_V"]["deg"].append(dataa[1])
                 single_device_data_con["LED"]["time"].append(time_f)
-                single_device_data_con["LED"]["led"].append(dataa[2:4])
+                single_device_data_con["LED"]["led"].append(dataa[2:5])
             self.data[list(self.data.keys())[i]] = single_device_data_con
         return False
     
@@ -83,12 +83,18 @@ class convert:
             ls1.append(numpy.interp(time_ms/1000, self.data[list(self.data.keys())[j]]["servo_V"]["time"], self.data[list(self.data.keys())[j]]["servo_V"]["deg"], left=0))
             time_s = time_ms/1000
             st = True
-            cti = 0
-            while st:
-                st = self.data[list(self.data.keys())[j]]["LED"]["time"][cti] <= time_s 
-                LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][cti]
-                cti+=1
-            ##ls1.append(LED_lst)
+            cti = 0 
+            if(len(self.data[list(self.data.keys())[j]]["LED"]["time"]) == 1):
+                LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][0]
+                pass
+            else:
+                while st:
+                    st = self.data[list(self.data.keys())[j]]["LED"]["time"][cti] <= time_s 
+                    LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][cti]
+                    cti+=1
+                    if(len(self.data[list(self.data.keys())[j]]["LED"]["time"]) == cti):
+                        st = False
+            ls1.append(LED_lst)
             vaa.append(ls1)
         print(vaa)
         return vaa
