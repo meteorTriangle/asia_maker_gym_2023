@@ -18,7 +18,7 @@ import os
 #### sub
 import serial__.ser as sser
 self_path = os.path.dirname(__file__) + "\\"
-self_path = ""
+##self_path = ""
 servo_change = False
 elevator_in_change = False
 run = 1
@@ -27,6 +27,7 @@ LED_change = False
 ###pyserial
 BAUD_RATES = 10000000
 
+single_default = False
 single_servo_frame = list(range(9))
 horizon_servo_gui = list(range(9))
 vertical_servo_gui = list(range(9))
@@ -101,6 +102,7 @@ def open__file():
         txt.delete(1.0,END)
         txt.insert(INSERT,f.read())
     root.title(file_path)
+    stop_C()
     
 def save__file(save_as):
     global file_path
@@ -118,6 +120,7 @@ def save__as():
     save__file(True)
 
 def loop_():
+    global single_default
     now_time = sj.get_time()
     sec_I = (now_time % 600000) / 1000
     min_I = now_time // (60*1000)
@@ -126,7 +129,9 @@ def loop_():
     sec_S = '%05.2f' % sec_I
     time_text=  min_S + ":" + sec_S
     timer_label["text"]=time_text
-    if(sj.timer_state):
+    if(single_default):
+        sj.timer_reset()
+    if(sj.timer_state or single_default):
         if(sj.pause_state == False):
             servo_data = sj.run_json()
             if type(servo_data) is str:
@@ -141,6 +146,7 @@ def loop_():
                         LED_butt[j]["green"]["bg"] = ("#FFFFFF", "#00FF00")[servo_data[j][2][1]]
                     if(servo_data[j][2][2] != -1):
                         LED_butt[j]["blue"]["bg"] = ("#FFFFFF", "#0000FF")[servo_data[j][2][2]]
+        single_default = False
     global servo_change
     if(com_connect['text'] == "斷線" and servo_change):
         trans_data = '04'
@@ -200,9 +206,15 @@ def play_C():
         play_button["bg"] = "gray"
 
 def stop_C():
+    sj.file_path = file_path
+    sj.timer_reset()
+    time.sleep(0.05)
+    sj.pause_state = False
+    global single_default
     sj.timer_state = False
     pause_button["bg"] = "white"
     play_button["bg"] = "white"
+    single_default = True
 
 def pause_C():
     if(sj.timer_state):

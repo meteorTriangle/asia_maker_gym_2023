@@ -90,10 +90,11 @@ class convert:
             else:
                 while st:
                     st = self.data[list(self.data.keys())[j]]["LED"]["time"][cti] <= time_s 
-                    LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][cti]
-                    cti+=1
-                    if(len(self.data[list(self.data.keys())[j]]["LED"]["time"]) == cti):
-                        st = False
+                    LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][cti-1]
+                    if((len(self.data[list(self.data.keys())[j]]["LED"]["time"])-1 == cti) and st):
+                        LED_lst = self.data[list(self.data.keys())[j]]["LED"]["led"][cti]
+                        break
+                    cti += 1
             ls1.append(LED_lst)
             vaa.append(ls1)
         print(vaa)
