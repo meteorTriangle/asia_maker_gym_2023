@@ -63,7 +63,7 @@ class convert:
             for frame in single_device_data:
                 dataa = frame[list(frame.keys())[0]]
                 time_str = list(frame.keys())[0]
-                time_f = int(time_str[0:1])*60 + float(time_str[3:7])
+                time_f = int(time_str[0:2])*60 + float(time_str[3:7])
                 if(dataa[0] != -1):
                     single_device_data_con["servo_H"]["time"].append(time_f)
                     single_device_data_con["servo_H"]["deg"].append(dataa[0])
